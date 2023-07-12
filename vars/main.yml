@@ -13,7 +13,7 @@ NODEJS_VERSION: '18.16.0'
 USE_CALIBNET: 'y'
 
 # Choose the temporary installation directory for Lotus
-INSTALL_DIR: $HOME
+INSTALL_DIR: /opt
 
 # Choose the sector size for your miner: 32GiB / 64GiB
 SECTOR_SIZE: 32GiB
@@ -57,9 +57,9 @@ MINER_PORT:
 SEALED_STORAGE: /mnt/storage
 
 # Boost configuration
-BOOST_CLIENT: $HOME/.boost_client
-BOOST_BITSWAP: $HOME/.boost_bitswap
-BOOST_DIR: $HOME/.boost
+BOOST_CLIENT: /opt/.boost_client
+BOOST_BITSWAP: /opt/.boost_bitswap
+BOOST_DIR: /opt/.boost
 # Internal IP for the boostd API
 BOOST_IP:
 # Port on which the boostd API will run
