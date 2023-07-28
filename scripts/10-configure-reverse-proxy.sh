@@ -41,6 +41,11 @@ server {\n
         ssl_prefer_server_ciphers on;\n
         ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;\n\n
 
+       location /piece/ {\n
+                proxy_pass http://127.0.0.1:${HTTP_PORT};\n
+                auth_basic \"Restricted Server\";\n
+                auth_basic_user_file /etc/nginx/ipfs-gateway.conf.d/.htpasswd;\n   
+
         location /ipfs/ {\n
                 proxy_pass http://127.0.0.1:${HTTP_PORT};\n
                 auth_basic \"Restricted Server\";\n
@@ -65,6 +70,11 @@ server {\n
         ssl_prefer_server_ciphers on;\n
         ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;\n\n
 
+        location /piece/ {\n
+                proxy_pass http://127.0.0.1:${HTTP_PORT};\n
+                auth_basic \"Restricted Server\";\n
+                auth_basic_user_file /etc/nginx/ipfs-gateway.conf.d/.htpasswd;\n                  
+        }\n
         location /ipfs/ {\n
                 proxy_pass http://127.0.0.1:${HTTP_PORT};\n
                 auth_basic \"Restricted Server\";\n
