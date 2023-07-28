@@ -1,0 +1,12 @@
+---
+# tasks file for sp-stack-automation
+
+#- name: print variable
+#  debug:
+#    msg: Install directory is {{ INSTALL_DIR }}
+
+tasks
+- name: test shell
+  shell: "ls -la"
+  register: "output"
+ 
