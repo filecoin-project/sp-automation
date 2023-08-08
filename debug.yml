@@ -1,0 +1,8 @@
+---
+- name: Deploy Lotus
+  hosts: lotus_primary
+  become: true
+
+  roles:
+    #- zorlin.lotus_daemon
+    - zorlin.lotus_miner

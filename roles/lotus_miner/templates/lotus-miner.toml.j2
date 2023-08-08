@@ -1,0 +1,13 @@
+[API]
+  ListenAddress = "/ip4/0.0.0.0/tcp/{{ lotus_miner_port }}/http"
+  RemoteListenAddress = "${IP}:{{ lotus_miner_port }}"
+  Timeout = "30s"
+
+[Storage]
+  AllowAddPiece = false
+  AllowPreCommit1 = false
+  AllowPreCommit2 = false
+  AllowCommit = true
+  AllowUnseal = true
+  AllowReplicaUpdate = true
+  AllowProveReplicaUpdate2 = true

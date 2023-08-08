@@ -1,0 +1,6 @@
+---
+# Final checks to ensure Lotus is healthy and ready to go
+# These are a massive TODO - the open question is, what does a fully healthy Lotus node look like?
+# We should have checks that reflect that, and link out to helpful advice if the node is not healthy
+# (or better yet, try to fix the issues automatically).
+# - Wings

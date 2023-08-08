@@ -1,0 +1,23 @@
+---
+- name: Set system limits
+  ansible.builtin.template:
+    src: 10-fil-lotus.conf.j2
+    dest: /etc/security/limits.d/10-fil-lotus.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Reload systemd
+
+- name: Set maximum number of file handles per process
+  ansible.posix.sysctl:
+    name: fs.nr_open
+    value: '128000000'
+    sysctl_file: /etc/sysctl.d/fil-lotus.conf
+    reload: true
+
+- name: Set maximum number of file handles for the kernel
+  ansible.posix.sysctl:
+    name: fs.file-max
+    value: '128000000'
+    sysctl_file: /etc/sysctl.d/fil-lotus.conf
+    reload: true

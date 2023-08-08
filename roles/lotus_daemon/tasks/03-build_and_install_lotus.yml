@@ -1,0 +1,116 @@
+---
+# Here we attempt to automatically detect what CPU flags and optimisations are available.
+- name: Execute lscpu to get CPU flags
+  command:
+    cmd: lscpu
+  register: lscpu_output
+  changed_when: False
+
+- name: Extract flags from lscpu output
+  set_fact:
+    cpu_flags: "{{ lscpu_output.stdout_lines | join(' ') | regex_findall('\\b\\w+\\b') }}"
+
+- name: Set gpu_details to empty if it is not defined by the user
+  set_fact:
+    gpu_details: ""
+  when: gpu_details is not defined
+
+- name: Check if Lotus is installed (and if so, what version it is)
+  shell: "/usr/local/bin/lotus --version"
+  register: lotus_version_installed
+  changed_when: false
+  failed_when: false
+  ignore_errors: true
+
+- name: Detect and set gpu_details if a NVIDIA card is present and we are installing the NVIDIA driver
+  include_tasks: 03a-detect_and_set_nvidia.yml
+  when: install_nvidia_driver | bool
+
+- name: Check if SHA_NI or SHA256 exist in CPU flags
+  set_fact:
+    has_sha256: "{{ 'sha256' in cpu_flags }}"
+    has_sha_ni: "{{ 'sha_ni' in cpu_flags }}"
+
+- name: Set build flags if SHA256 extensions were found
+  set_fact:
+    build_flags: "export RUSTFLAGS='-C target-cpu=native -g' ; export FFI_BUILD_FROM_SOURCE=1 ; export FFI_USE_MULTICORE_SDR=0; export RUST_GPU_TOOLS_CUSTOM_GPU='{{ gpu_details }}'"
+  when: has_sha256 or has_sha_ni
+
+- name: Set build flags if SHA256 extensions were not found
+  set_fact:
+    build_flags: "export FFI_USE_MULTICORE_SDR=0 ; export RUST_GPU_TOOLS_CUSTOM_GPU='{{ gpu_details }}'"
+  when: not has_sha256 and not has_sha_ni
+
+# TODO(bug): We build the Lotus repo as root to work around an Ansible bug - https://github.com/ansible/ansible/issues/80233
+# This is not ideal long term. We should be able to build as the lotus_user.
+
+# - name: Ensure Lotus checkout directory exists and is owned by lotus_user
+#   ansible.builtin.file:
+#     path: "{{ build_dir }}/lotus"
+#     state: directory
+#     owner: "{{ lotus_user }}"
+#     group: "{{ lotus_user }}"
+#     mode: '0755'
+
+- name: Print build flags
+  debug:
+    msg:
+      - "We will build lotusd with these build flags: {{ build_flags }}."
+      - "Mainnet: {{ not use_calibrationnet }}"
+
+- name: Check out Lotus
+  ansible.builtin.git:
+    repo: "{{ lotus_git_repo }}"
+    dest: "{{ build_dir }}/lotus"
+    version: "{{ lotus_version }}"
+    accept_newhostkey: true
+    recursive: true
+  become: true
+
+# If we have a version of Lotus installed, but our configuration indicates we should have a different version installed, we need to build Lotus.
+# If Lotus isn't installed, we need to build it and install it.
+# We also need to build Lotus if we have a calibnet version installed, but our configuration indicates we should have a mainnet build installed.
+- name: Determine if we need to build Lotus
+  set_fact:
+    lotus_build_required: "{{ lotus_version | regex_replace('^v', '') not in lotus_version_installed.stdout }}"
+  when: lotus_version_installed is defined
+
+- name: Determine if we have a calibnet version of Lotus installed, but want a mainnet build
+  set_fact:
+    lotus_build_required: true
+  when: not use_calibrationnet and lotus_version_installed is defined and (lotus_version_installed.stdout | regex_search('calibnet'))
+
+- name: Determine if we have a mainnet version of Lotus installed, but want a calibnet build
+  set_fact:
+    lotus_build_required: true
+  when: use_calibrationnet and lotus_version_installed is defined and not (lotus_version_installed.stdout | regex_search('calibnet'))
+
+- name: Clean our build directories if we need to build Lotus
+  make:
+    chdir: "{{ build_dir }}/lotus"
+    target: clean
+  when: lotus_build_required | default(false)
+
+- name: Build Lotus for mainnet
+  ansible.builtin.shell:
+    cmd: "source /etc/profile.d/golang.sh ; source $HOME/.cargo/env ; {{ build_flags }} ; make -j{{ ansible_processor_vcpus }} all"
+    chdir: "{{ build_dir }}/lotus"
+    executable: /bin/bash
+  when: not use_calibrationnet and lotus_build_required | default(false)
+
+- name: Build Lotus for calibnet
+  ansible.builtin.shell:
+    cmd: "source /etc/profile.d/golang.sh ; source $HOME/.cargo/env ; {{ build_flags }} ; make -j{{ ansible_processor_vcpus }} calibnet"
+    chdir: "{{ build_dir }}/lotus"
+    executable: /bin/bash
+  when: use_calibrationnet and lotus_build_required | default(false)
+
+- name: Install Lotus
+  make:
+    chdir: "{{ build_dir }}/lotus"
+    target: install
+  when: lotus_build_required | default(false)
+  notify: Restart Lotus daemon
+
+- name: Flush handlers to restart Lotus if needed
+  meta: flush_handlers

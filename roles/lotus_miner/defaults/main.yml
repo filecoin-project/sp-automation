@@ -1,0 +1,54 @@
+---
+# defaults file for lotus_miner
+lotus_user: lotus
+lotus_group: lotus
+create_lotus_system_user: true
+
+# URL of the Lotus git repository
+lotus_git_repo: "https://github.com/filecoin-project/lotus.git"
+
+# Check which version of Lotus matches with which version of Boost and Go: https://boost.filecoin.io/getting-started
+lotus_version: "v1.23.2"
+golang_version: "1.20.4"
+boost_version: "v1.7.2"
+
+# Build Lotus for Calibration testnet instead of mainnet: true / false
+# if "true", use the Faucet to give your wallets test FIL: https://faucet.calibration.fildev.network/
+use_calibrationnet: true
+
+# Port for Lotus Daemon to run on
+lotus_daemon_port: 1234
+
+# Port for libp2p host to run on
+lotus_libp2p_port: 6665
+
+# Port for miner to run on
+lotus_miner_port: 2345
+
+# By default, we naively attempt to use the default IPv4 address for the miner. This may not be a local address!
+lotus_miner_ip: "{{ ansible_default_ipv4.address }}"
+
+# The sector size you want for your miner: choose from 32GiB / 64GiB
+sector_size: "32GiB"
+
+# Location for the Lotus log file(s)
+log_dir: "/var/log/lotus"
+
+# Where to store the API token for Lotus Miner.
+lotus_miner_api_token_file: "{{ lotus_miner_path }}/api_token"
+
+# Build directory for building software. Originally "${INSTALL_DIR}".
+build_dir: "/usr/local/src/"
+
+# Location for the miner proof cache. This needs to be fast storage, ideally NVMe, and requires ca.150GiB.
+param_cache: "/opt/cache/param_cache"
+parent_cache: "/opt/cache/parent_cache"
+
+# Location for lotus miner's data repository.
+lotus_miner_path: "/home/{{ lotus_user }}/.lotusminer{% if use_calibrationnet %}_calibnet{% endif %}"
+
+# Skip wallet creation, chain sync and import and similar tasks. Just test building the software.
+smoketest: false
+
+# If you are ready for mainnet, you know what to do here. See the docs if you're not sure!
+ready_for_mainnet: false

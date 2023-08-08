@@ -1,0 +1,11 @@
+---
+# handlers file for lotus_miner
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Restart Lotus miner
+  ansible.builtin.systemd:
+    name: lotus-miner
+    state: restarted
+    enabled: true

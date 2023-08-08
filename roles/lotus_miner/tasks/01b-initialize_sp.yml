@@ -1,0 +1,49 @@
+---
+- name: Set initialization parameters
+  set_fact:
+    init_flags: "export FIL_PROOFS_PARAMETER_CACHE={{ param_cache }} ; export FIL_PROOFS_PARENT_CACHE={{ parent_cache }} ; export LOTUS_SEALING_AGGREGATECOMMITS=false ; export LOTUS_SEALING_BATCHPRECOMMITS=false"
+
+- name: List existing wallets
+  shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet list"
+  register: wallet_list
+  become_user: "{{ lotus_user }}"
+  become: true
+  changed_when: false
+
+- name: If there are not at least two wallets in the list, bail - something is wrong!
+  set_fact:
+    number_of_wallets: 0
+  when: wallet_list.stdout_lines[1:] | select('search', 'FIL') | list | length < 2
+
+- name: If both wallets exist, set the addresses for the owner and worker wallets
+  set_fact:
+    owner_wallet_address: "{{ wallet_list.stdout_lines[1].split(' ')[0] }}"
+    worker_wallet_address: "{{ wallet_list.stdout_lines[2].split(' ')[0] }}"
+  when: number_of_wallets | int >= 2
+
+- name: Install environment file for Lotus miner
+  template:
+    src: lotus-miner.env.j2
+    dest: /etc/default/lotus-miner
+    owner: root
+    group: root
+    mode: 0644
+    backup: true
+  notify:
+    - Reload systemd
+    - Restart Lotus miner
+  become: true
+
+- name: Initialize Lotus miner
+  shell:
+    cmd: "lotus-miner --miner-repo {{ lotus_miner_path }} init --no-local-storage --owner={{ owner_wallet_address }} --worker={{ worker_wallet_address }} --sector-size={{ sector_size }}"
+    executable: /bin/bash
+    chdir: "{{ lotus_path }}"
+  become_user: "{{ lotus_user }}"
+  become: true
+  environment:
+    LOTUS_PATH: "{{ lotus_path }}"
+    FIL_PROOFS_PARAMETER_CACHE: "{{ param_cache }}"
+    FIL_PROOFS_PARENT_CACHE: "{{ parent_cache }}"
+    LOTUS_SEALING_AGGREGATECOMMITS: "false"
+    LOTUS_SEALING_BATCHPRECOMMITS: "false"

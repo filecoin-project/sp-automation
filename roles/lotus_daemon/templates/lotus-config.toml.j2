@@ -1,0 +1,16 @@
+[API]
+  ListenAddress = "/ip4/0.0.0.0/tcp/{{ lotus_daemon_port }}/http"
+
+[Libp2p]
+  ListenAddresses = ["/ip4/0.0.0.0/tcp/{{ lotus_libp2p_port }}"]
+  AnnounceAddresses = ["/ip4/{{ lotus_public_ip }}/tcp/{{ lotus_libp2p_port }}"]
+  NoAnnounceAddresses = []
+  DisableNatPortMap = false
+  ConnMgrLow = 100
+  ConnMgrHigh = 500
+  ConnMgrGrace = "30s"
+
+[Chainstore]
+  # type: bool
+  # env var: LOTUS_CHAINSTORE_ENABLESPLITSTORE
+  EnableSplitstore = true

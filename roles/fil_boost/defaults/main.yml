@@ -1,0 +1,5 @@
+---
+# defaults file for fil_boost
+
+# Skip wallet creation, chain sync and import and similar tasks. Just test building the software.
+smoketest: false

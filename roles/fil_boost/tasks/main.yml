@@ -1,0 +1,16 @@
+---
+# tasks file for fil_boost
+# create_boost_wallets ${INSTALL_DIR}
+# set_boost_vars
+# send_funds_to_boost
+# set_boost_control_wallet
+# install_node ${INSTALL_DIR} 
+# build_boost ${INSTALL_DIR}
+
+# Prerequisites
+- name: Install prerequisites
+  include_tasks: 01-install_prerequisites.yml
+
+- name: Create Boost wallets
+  include_tasks: 02-create_boost_wallets.yml
+  when: not smoketest
