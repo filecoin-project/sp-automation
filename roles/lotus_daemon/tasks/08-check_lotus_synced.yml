@@ -1,0 +1,36 @@
+---
+# We use a clever hack here to loop until we succeed. Ref: https://github.com/ansible/ansible/issues/46203#issuecomment-496545220
+- name: Check Lotus is synced
+  block:
+    - name: Wait for Lotus to be synced
+      ansible.builtin.shell:
+        cmd: "export LOTUS_PATH={{ lotus_path }} ; lotus sync wait"
+      async: 86400 # 1 day
+      poll: 5
+      register: lotus_sync_status
+      become_user: "{{ lotus_user }}"
+      become: true
+
+    - name: If Lotus is synchronized, report success!
+      ansible.builtin.debug:
+        msg: "Lotus daemon is synchronized with the public network. Continuing..."
+      when: "'Done!' in lotus_sync_status.stdout"
+
+    - name: If Lotus is not synchronized, attempt to get the current stage and block height from the output.
+      set_fact:
+        lotus_sync_stage: "{{ lotus_sync_status.stdout | regex_search('Stage: (.+)$', multiline=True) | regex_replace('^Stage: ', '') }}"
+        lotus_sync_height: "{{ lotus_sync_status.stdout | regex_findall('Height: (\\d+)') | first }}"
+      when: "'Done!' not in lotus_sync_status.stdout"
+
+    - name: If Lotus is not synchronized, report failure, then pause and retry automatically.
+      ansible.builtin.fail:
+        msg: "Lotus daemon is not synchronised yet. "
+      when: "'Done!' not in lotus_sync_status.stdout"
+  rescue:
+    - debug:
+        msg: "Lotus daemon is not synchronised yet. Retrying in 30 seconds..."
+    - debug:
+        msg: "We are in stage {{ lotus_sync_stage }}. For more details, run `lotus sync status` on your node."
+    - pause:
+        seconds: 30
+    - include_tasks: 08-check_lotus_synced.yml

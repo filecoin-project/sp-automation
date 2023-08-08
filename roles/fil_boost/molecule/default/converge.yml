@@ -1,0 +1,50 @@
+---
+- name: Converge
+  hosts: all
+
+  vars:
+    lotus_user: lotus
+    lotus_group: lotus
+    nodejs_version: 18.x
+    nodejs_install_npm_user: "{{ lotus_user }}"
+    golang_version: "1.20.4"
+    rustup_configure_shell: false
+    # Debug/testnet settings
+    smoketest: true
+    use_calibrationnet: true
+    ready_for_mainnet: false
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Ensure all packages are up to date
+      ansible.builtin.apt:
+        upgrade: dist
+
+    - name: Create Lotus system group
+      ansible.builtin.group:
+        name: "{{ lotus_group }}"
+        system: true
+        state: present
+
+    - name: Create Lotus system user
+      ansible.builtin.user:
+        name: "{{ lotus_user }}"
+        comment: "Lotus Daemon User"
+        shell: /bin/bash
+        system: true
+        createhome: true
+        group: "{{ lotus_group }}"
+        groups: "sudo,adm"
+        append: true
+        state: present
+
+    - name: Include zorlin.lotus_daemon
+      ansible.builtin.include_role:
+        name: "zorlin.lotus_daemon"
+
+    - name: Include zorlin.fil_boost
+      ansible.builtin.include_role:
+        name: "zorlin.fil_boost"

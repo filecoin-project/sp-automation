@@ -1,0 +1,31 @@
+---
+- name: Install systemd environment file
+  template:
+    src: lotus-daemon.env.j2
+    dest: /etc/default/lotus-daemon
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Reload systemd
+    - Restart Lotus daemon
+  become: true
+
+- name: Install systemd unit file
+  template:
+    src: lotus-daemon.service.j2
+    dest: /etc/systemd/system/lotus-daemon.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Reload systemd
+    - Restart Lotus daemon
+  become: true
+
+- name: Start Lotus daemon
+  ansible.builtin.systemd:
+    name: lotus-daemon
+    state: started
+    enabled: true
+  become: true

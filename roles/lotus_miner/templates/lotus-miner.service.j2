@@ -1,0 +1,18 @@
+[Unit]
+Description=Lotus Miner
+After=lotus-daemon.service
+Requires=network-online.target
+
+[Service]
+Environment="GOLOG_FILE={{ log_dir }}/lotusminer.log"
+EnvironmentFile=/etc/default/lotus-miner
+User={{ lotus_user }}
+Group={{ lotus_user }}
+ExecStartPre=/bin/sleep 30
+ExecStart=/usr/local/bin/lotus-miner --miner-repo {{ lotus_miner_path }} run
+
+StandardOutput=append:{{ log_dir }}/lotusminer.log
+StandardError=append:{{ log_dir }}/lotusminer.log
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,135 @@
+---
+- name: Detect if a NVIDIA card is installed and working in the system
+  shell: "nvidia-smi -L"
+  register: nvidia_smi_output
+  changed_when: False
+  failed_when: False
+  ignore_errors: True
+
+- name: Set gpu_detected to false if we did not find a working NVIDIA card
+  set_fact:
+    gpu_detected: false
+  when: nvidia_smi_output.stdout == ""
+
+- name: Set gpu_detected if we found a working NVIDIA card
+  set_fact:
+    gpu_detected: "{{ 'GPU' in nvidia_smi_output.stdout }}"
+  when: nvidia_smi_output.stdout != ""
+
+- name: Check if Secure Boot is enabled
+  shell: "mokutil --sb-state"
+  register: secure_boot_output
+  changed_when: False
+  failed_when: False
+  ignore_errors: True
+
+- name: Set secure_boot_enabled if Secure Boot is enabled
+  set_fact:
+    secure_boot_enabled: "{{ 'SecureBoot enabled' in secure_boot_output.stdout }}"
+  when: secure_boot_output.stdout != ""
+
+- name: Inform the user if we expected a working NVIDIA card (install_nvidia_driver is true) but did not find one
+  debug:
+    msg:
+      - "We expected a working NVIDIA card and driver install but did not find one."
+      - "This is normal if this is your first time running this playbook and you are installing the NVIDIA driver with it."
+      - "We're exiting now as Lotus should be built with GPU optimisations if a NVIDIA GPU is present."
+      - "Please reboot to attempt to activate the NVIDIA driver, and try again."
+      - "If you are not overriding the lotus_nvidia_skip_reboot setting, we will reboot your machine for you automatically."
+  when:
+    - not gpu_detected | bool
+
+- name: If the node has Secure Boot enabled, inform the user of the secure boot requirements
+  debug:
+    msg:
+      - "We expected a working NVIDIA card and driver install but did not find one."
+      - "This is normal if this is your first time running this playbook and you are installing the NVIDIA driver with it."
+      - "We're exiting now as Lotus should be built with GPU optimisations if a NVIDIA GPU is present."
+      - "Additionally, Ubuntu requires secure boot to be disabled or for the NVIDIA driver to be signed (the latter is preferable)."
+      - "Please sign the driver and reboot (see instructions in the lotus-automation repository) or disable secure boot and try again."
+  when:
+    # When secure boot is enabled, and no GPU was detected
+    - secure_boot_enabled is defined and secure_boot_enabled | bool
+    - not gpu_detected | bool
+
+- name: Reboot the machine if we expected a working NVIDIA card (install_nvidia_driver is true) but did not find one
+  reboot:
+    reboot_timeout: 300
+    msg: "Rebooting to attempt to activate the NVIDIA driver"
+  when:
+    # When install_nvidia_driver is true, secure boot is not enabled, and no GPU was detected, and we are not skipping reboots
+    - install_nvidia_driver is defined and install_nvidia_driver | bool
+    - secure_boot_enabled is not defined or not secure_boot_enabled
+    - not gpu_detected | bool
+    - not lotus_nvidia_skip_reboot | bool
+
+- name: Attempt 2 - Detect if a NVIDIA card is installed and working in the system
+  shell: "nvidia-smi -L"
+  register: nvidia_smi_output
+  changed_when: False
+  failed_when: False
+  ignore_errors: True
+  when:
+    - secure_boot_enabled is not defined or not secure_boot_enabled
+
+- name: Attempt 2 - Set gpu_detected if we found a working NVIDIA card
+  set_fact:
+    gpu_detected: "{{ 'GPU' in nvidia_smi_output.stdout }}"
+  when: 
+    - nvidia_smi_output.stdout != ""
+    - secure_boot_enabled is not defined or not secure_boot_enabled
+
+- name: Die if we expected a working NVIDIA card (install_nvidia_driver is true) but did not find one
+  fail:
+    msg: "We expected a working NVIDIA card and driver install but did not find one. Aborting."
+  when:
+    - install_nvidia_driver is defined and install_nvidia_driver | bool
+    - not gpu_detected | bool
+
+- name: We're still alive! Let's grab our GPU's name.
+  shell: "nvidia-smi --query-gpu=gpu_name --format=csv,noheader"
+  register: nvidia_gpu_name
+  changed_when: False
+  failed_when: False
+  ignore_errors: True
+  when: gpu_detected | bool
+
+- name: Now, let's install the CUDA toolkit so we can get more information about our GPU.
+  ansible.builtin.package:
+    name: cuda-toolkit-12-2
+    state: present
+  become: true
+  when: gpu_detected | bool
+
+- name: Download the CUDA Samples so we can get more information about our GPU.
+  ansible.builtin.git:
+    repo: https://github.com/NVIDIA/cuda-samples/
+    dest: /usr/local/src/cuda-samples
+    version: master
+    depth: 1
+  become: true
+  when: gpu_detected | bool
+
+- name: Build the deviceQuery CUDA sample utility
+  make:
+    chdir: /usr/local/src/cuda-samples/Samples/1_Utilities/deviceQuery
+  become: true
+  when: gpu_detected | bool
+
+- name: Run the deviceQuery CUDA sample utility to get more information about our GPU.
+  shell: /usr/local/src/cuda-samples/Samples/1_Utilities/deviceQuery/deviceQuery
+  register: device_query_output
+  changed_when: False
+  failed_when: False
+  ignore_errors: True
+  when: gpu_detected | bool
+
+- name: Parse the output of the deviceQuery utility to fetch the number of CUDA cores
+  set_fact:
+    cuda_cores: "{{ device_query_output.stdout | regex_findall('\\b\\d+ CUDA Cores\\b') | first | regex_replace(' CUDA Cores', '') }}"
+  when: gpu_detected | bool
+
+- name: Build and set the GPU tuning parameters
+  set_fact:
+    gpu_details: "{{ nvidia_gpu_name.stdout }}:{{ cuda_cores }}"
+  when: gpu_detected | bool

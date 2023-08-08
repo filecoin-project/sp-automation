@@ -1,0 +1,43 @@
+---
+- name: Get public IPv4 address using ifconfig.me
+  ansible.builtin.uri:
+    url: https://ifconfig.me
+    return_content: yes
+    status_code: 200
+    validate_certs: false
+    http_agent: curl
+  register: public_ipv4
+  until: public_ipv4.status == 200
+  retries: 3
+  delay: 3
+  when: lotus_public_ip is not defined
+
+- name: If we now have a public IPv4 address, use it
+  set_fact:
+    lotus_public_ip: "{{ public_ipv4.content }}"
+  when: lotus_public_ip is not defined and public_ipv4.status == 200
+
+# We use a clever hack here to loop until we succeed. Ref: https://github.com/ansible/ansible/issues/46203#issuecomment-496545220
+- name: Check Lotus reachability
+  block:
+    - name: Ask Lotus if it's publicly reachable
+      ansible.builtin.shell:
+        cmd: "export LOTUS_PATH={{ lotus_path }} ; lotus net reachability | grep 'Public'"
+      register: libp2p_reachability
+      changed_when: false
+      become_user: "{{ lotus_user }}"
+      become: true
+
+    - name: If publicly reachable, report success!
+      ansible.builtin.debug:
+        msg: "Lotus daemon is visible on the public network via port {{ lotus_libp2p_port }} on {{ lotus_public_ip }}. Continuing..."
+      when: libp2p_reachability.stdout != ""
+
+    - name: If not publicly reachable, report failure, then pause and wait for further input from the user.
+      ansible.builtin.debug:
+        prompt: "Lotus daemon is not visible via port {{ lotus_libp2p_port }} on {{ lotus_public_ip }}. Check your firewall settings."
+      when: libp2p_reachability.stdout == "" or libp2p_reachability.rc != 0
+  rescue:
+    - pause:
+        prompt: "Lotus daemon is not visible via port {{ lotus_libp2p_port }} on {{ lotus_public_ip }}. Check your firewall and router settings, and restart Lotus. Press [ENTER] to retry"
+    - include_tasks: 07-check_lotus_reachability.yml

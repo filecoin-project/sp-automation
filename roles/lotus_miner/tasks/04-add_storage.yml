@@ -1,0 +1,51 @@
+---
+- name: Ask user for a list of storage paths
+  pause:
+    prompt: "Enter a list of storage paths for sealed sectors, separated by commas (e.g. /mnt/storage1,/mnt/storage2): "
+  register: new_lotus_miner_storage_paths
+  when: lotus_miner_storage_paths is not defined
+
+- name: Exit if user did not enter any storage paths or entered invalid paths
+  fail:
+    msg: "You must enter a list of storage paths for sealed sectors."
+  when: new_lotus_miner_storage_paths.user_input | length == 0
+
+- name: Convert storage paths to a list
+  set_fact:
+    lotus_miner_storage_paths: "{{ new_lotus_miner_storage_paths.user_input.split(',') }}"
+  when: lotus_miner_storage_paths is not defined and new_lotus_miner_storage_paths.user_input | length > 0
+
+- name: Check and set permissions on the storage paths - ensure Lotus owns the sealed sector folders
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: true
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_group }}"
+    # We set permissions using a different syntax than usual here, so that files and folders end up with "proper" masks.
+    # Ref: https://stackoverflow.com/a/60240956
+    mode: 'u=rwX,g=rX,o='
+  with_items: "{{ lotus_miner_storage_paths }}"
+
+- name: Add storage to Lotus miner
+  ansible.builtin.shell:
+    cmd: "lotus-miner storage attach --init --store {{ item }}"
+  with_items: "{{ lotus_miner_storage_paths }}"
+  register: lotus_miner_storage_attach
+  become_user: "{{ lotus_user }}"
+  become: true
+  when: lotus_miner_storage_paths is defined
+  changed_when: lotus_miner_storage_attach.rc == 0
+
+- name: Print a list of Lotus-registered storage paths
+  shell:
+    cmd: "lotus-miner storage list"
+  register: lotus_miner_storage_list
+  when: lotus_miner_storage_paths is defined
+
+- name: Verify that all storage paths were successfully added
+  assert:
+    that:
+      - item in lotus_miner_storage_list.stdout
+    msg: "Storage path {{ item }} was not successfully added to Lotus miner. Please check your configuration and try again."
+  with_items: "{{ lotus_miner_storage_paths }}"

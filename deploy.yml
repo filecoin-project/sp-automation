@@ -1,0 +1,45 @@
+---
+- name: Deploy Lotus
+  hosts: lotus_primary
+  become: true
+
+  pre_tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Ensure all packages are up to date
+      ansible.builtin.apt:
+        upgrade: dist
+
+    - name: Create Lotus system group
+      ansible.builtin.group:
+        name: "{{ lotus_group }}"
+        system: true
+        state: present
+
+    - name: Create Lotus system user
+      ansible.builtin.user:
+        name: "{{ lotus_user }}"
+        comment: "Lotus Daemon User"
+        shell: /bin/bash
+        system: true
+        createhome: true
+        group: "{{ lotus_group }}"
+        groups: "sudo,adm"
+        append: true
+
+    - name: Create Lotus log directory
+      ansible.builtin.file:
+        path: "{{ log_dir }}"
+        state: directory
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_group }}"
+        mode: 0750
+
+  roles:
+    # We use a slightly modified role for the nvidia driver because the default one fails when installing in CUDA mode with newer drivers.
+    - { role: zorlin.nvidia_driver, when: install_nvidia_driver | bool }
+    - zorlin.lotus_daemon
+    - zorlin.lotus_miner
+    - zorlin.fil_boost
