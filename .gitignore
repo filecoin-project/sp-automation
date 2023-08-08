@@ -1,0 +1,5 @@
+**/secrets.yml
+**/secret.yml
+group_vars/all
+host_vars/*
+inventory
