@@ -10,7 +10,7 @@ This is an experimental port of lotus-automation to Ansible.
 ## Usage
 - Clone this repository and `cd` into it
 ```
-git clone https://github.com/Zorlin/lotus-automation.git && cd lotus-automation
+git clone https://github.com/ng-solutions-architecture/sp-stack-automation.git && cd sp-stack-automation
 ```
 - Run the setup script to symlink Ansible Galaxy roles into place. This will not be needed once we make the roles available via Galaxy.
 ```
