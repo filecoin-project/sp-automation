@@ -1,6 +1,6 @@
 ---
 - name: Install systemd unit file for Lotus Miner
-  template:
+  ansible.builtin.template:
     src: lotus-miner.service.j2
     dest: /etc/systemd/system/lotus-miner.service
     owner: root
@@ -9,15 +9,7 @@
   notify:
     - Reload systemd
     - Restart Lotus miner
-  register: lotus_miner_systemd_service
 
-- name: Reload systemd
-  ansible.builtin.systemd:
-    daemon_reload: true
-  when: lotus_miner_systemd_service.changed
-
-- name: Start Lotus miner
-  ansible.builtin.systemd:
-    name: lotus-miner
-    state: started
-    enabled: true
+# TODO(feat): We should more gracefully handle restarting Lotus miner.
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers

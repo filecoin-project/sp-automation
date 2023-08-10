@@ -1,7 +1,7 @@
 ---
-# tasks file for lotus_miner
+# tasks ansible.builtin.file for lotus_miner
 - name: Ensure the lotus_miner_path exists
-  file:
+  ansible.builtin.file:
     path: "{{ lotus_miner_path }}"
     state: directory
     owner: "{{ lotus_user }}"
@@ -9,13 +9,13 @@
     mode: '0750'
 
 - name: Initialize Lotus miner
-  include_tasks: 01-initialize_lotus_miner.yml
+  ansible.builtin.include_tasks: 01-initialize_lotus_miner.yml
 
 - name: Install systemd service for Lotus miner and start Lotus miner
-  include_tasks: 02-systemd_lotus_miner.yml
+  ansible.builtin.include_tasks: 02-systemd_lotus_miner.yml
 
 - name: Announce Lotus miner
-  include_tasks: 03-announce_lotus_miner.yml
+  ansible.builtin.include_tasks: 03-announce_lotus_miner.yml
 
 - name: Add storage
-  include_tasks: 04-add_storage.yml
+  ansible.builtin.include_tasks: 04-add_storage.yml
