@@ -1,6 +1,6 @@
 ---
 - name: Install systemd environment file
-  template:
+  ansible.builtin.template:
     src: lotus-daemon.env.j2
     dest: /etc/default/lotus-daemon
     owner: root
@@ -12,7 +12,7 @@
   become: true
 
 - name: Install systemd unit file
-  template:
+  ansible.builtin.template:
     src: lotus-daemon.service.j2
     dest: /etc/systemd/system/lotus-daemon.service
     owner: root

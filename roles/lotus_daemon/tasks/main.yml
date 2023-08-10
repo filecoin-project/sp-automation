@@ -1,10 +1,10 @@
 ---
 # tasks file for lotus_daemon
 - name: Install prerequisites
-  include_tasks: 01-install_prerequisites.yml
+  ansible.builtin.include_tasks: 01-install_prerequisites.yml
 
 - name: Set limits and sysctl settings
-  include_tasks: 02-set_limits_and_sysctl.yml
+  ansible.builtin.include_tasks: 02-set_limits_and_sysctl.yml
 
 - name: Create log folder
   ansible.builtin.file:
@@ -15,8 +15,9 @@
     mode: 0700
 
 - name: Build and install Lotus
-  include_tasks: 03-build_and_install_lotus.yml
+  ansible.builtin.include_tasks: 03-build_and_install_lotus.yml
 
+# TODO(bug): We should use a detected home path, not /home/{{ lotus_user }}.
 - name: Ensure Lotus path is in the Lotus user's ~/.profile file
   ansible.builtin.lineinfile:
     path: "/home/{{ lotus_user }}/.profile"
@@ -25,23 +26,24 @@
     create: true
     owner: "{{ lotus_user }}"
     group: "{{ lotus_group }}"
+    mode: 0640
 
 - name: Download chain snapshots
-  include_tasks: 04-import_chain_snapshot.yml
+  ansible.builtin.include_tasks: 04-import_chain_snapshot.yml
   when: not smoketest
 
 - name: Install systemd service and environment for Lotus and start Lotus
-  include_tasks: 05-systemd_lotusd.yml
+  ansible.builtin.include_tasks: 05-systemd_lotusd.yml
 
 - name: Synchronize and initialize Lotus
-  include_tasks: 06-initialize_lotus.yml
+  ansible.builtin.include_tasks: 06-initialize_lotus.yml
 
 - name: Check Lotus reachability
-  include_tasks: 07-check_lotus_reachability.yml
+  ansible.builtin.include_tasks: 07-check_lotus_reachability.yml
 
 - name: Check that Lotus is synced
-  include_tasks: 08-check_lotus_synced.yml
+  ansible.builtin.include_tasks: 08-check_lotus_synced.yml
   when: not smoketest
 
 - name: Check that Lotus is installed and appears to be working
-  include_tasks: 09-final_preflight.yml
+  ansible.builtin.include_tasks: 09-final_preflight.yml

@@ -12,7 +12,7 @@
 # TODO(bug): This task reports "changed" even when the download was skipped due to "creates" being set.
 # This may actually be a bug in Ansible - a task that is not triggered should not report "changed".
 - name: Download latest chain snapshot
-  shell:
+  ansible.builtin.command:
     cmd: "aria2c -x5 https://snapshots.{{ 'calibrationnet' if use_calibrationnet else 'mainnet' }}.filops.net/minimal/latest.zst -o latest-lotus-snapshot.zst"
     creates: "/home/{{ lotus_user }}/{{ chain_download_dir }}/latest-lotus-snapshot.zst"
     chdir: "/home/{{ lotus_user }}/{{ chain_download_dir }}"
@@ -23,7 +23,7 @@
   become: true
 
 - name: Check on chain snapshot download (this will take a while, and show "FAILED" periodically until it succeeds)
-  async_status:
+  ansible.builtin.async_status:
     jid: "{{ download_chain_snapshot.ansible_job_id }}"
   register: download_chain_snapshot_status
   until: download_chain_snapshot_status.finished
@@ -52,21 +52,21 @@
   become: true
 
 - name: Explain what we're about to do
-  debug:
+  ansible.builtin.debug:
     msg:
       - "We are about to import a chain snapshot."
       - "This will take a while (potentially a long time), and show 'ASYNC POLL' periodically until it succeeds."
       - "If Ansible is interrupted, wait until the import is complete before running the playbook again."
 
 - name: Import chain snapshot
-  shell:
+  ansible.builtin.shell:
     cmd: "export LOTUS_PATH={{ lotus_path }} ; nohup lotus daemon --halt-after-import --import-snapshot /home/{{ lotus_user }}/{{ chain_download_dir }}/latest-lotus-snapshot.zst > {{ log_dir }}/lotus-import-snapshot.log 2>&1"
     executable: /bin/bash
   async: 86400 # 1 day
   poll: 5
   become_user: "{{ lotus_user }}"
   become: true
-  when: chain_imported.stat.exists == false
+  when: not chain_imported.stat.exists
 
 # These steps are disabled as they don't actually seem to do anything -
 # without Lotus running as a daemon, no synchronisation occurs and any attempt to run "lotus sync wait" results in blank output from Lotus.

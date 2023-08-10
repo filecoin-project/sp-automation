@@ -1,6 +1,6 @@
 ---
 - name: Read Lotus API token from file
-  ansible.builtin.shell:
+  ansible.builtin.command:
     cmd: "cat {{ lotus_api_token_file }}"
   register: lotus_api_token
   become_user: "{{ lotus_user }}"
@@ -10,21 +10,23 @@
   when: lotus_api_token_file is defined
 
 - name: If we successfully read a token, flatten the fact
-  set_fact:
+  ansible.builtin.set_fact:
     lotus_api_token: "{{ lotus_api_token.stdout }}"
   when: lotus_api_token != ""
 
 - name: Create API token if we don't have one or if we have an invalid one
+  # We run all these tasks if we are unable to find a seemingly valid API token.
+  when: lotus_api_token == "" or lotus_api_token == "null" or lotus_api_token == "undefined"
   block:
     - name: Create API token
       ansible.builtin.shell:
-        cmd: "export LOTUS_PATH={{ lotus_path }} ; lotus auth api-info --perm admin | cut -d':' -f1 | cut -d'=' -f2"
+        cmd: "set -o pipefail ; export LOTUS_PATH={{ lotus_path }} ; lotus auth api-info --perm admin | cut -d':' -f1 | cut -d'=' -f2"
       register: new_api_token
       become_user: "{{ lotus_user }}"
       become: true
 
     - name: Store API token as a variable if we retrieved it successfully
-      set_fact:
+      ansible.builtin.set_fact:
         lotus_api_token: "{{ new_api_token.stdout }}"
       when: 
         - new_api_token is defined
@@ -43,7 +45,7 @@
 
     # Re-read the Lotus API token now that we have created it
     - name: Read Lotus API token from file
-      ansible.builtin.shell:
+      ansible.builtin.command:
         cmd: "cat {{ lotus_api_token_file }}"
       register: lotus_api_token
       become_user: "{{ lotus_user }}"
@@ -51,8 +53,6 @@
       changed_when: false
       ignore_errors: true
       when: lotus_api_token_file is defined
-  # We run all these tasks if we are unable to find a seemingly valid API token.
-  when: lotus_api_token == "" or lotus_api_token == "null" or lotus_api_token == "undefined"
 
 - name: Get public IPv4 address using ifconfig.me
   ansible.builtin.uri:
@@ -68,14 +68,14 @@
   when: lotus_public_ip is not defined
 
 - name: If we now have a public IPv4 address, use it
-  set_fact:
+  ansible.builtin.set_fact:
     lotus_public_ip: "{{ public_ipv4.content }}"
   when: public_ipv4.status == 200
 
 - name: Configure Lotus
-  template:
+  ansible.builtin.template:
     src: lotus-config.toml.j2
-    dest: "{{ lotus_path}}/config.toml"
+    dest: "{{ lotus_path }}/config.toml"
     owner: lotus
     group: lotus
     backup: true

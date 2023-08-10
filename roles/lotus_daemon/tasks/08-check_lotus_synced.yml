@@ -8,6 +8,7 @@
       async: 86400 # 1 day
       poll: 5
       register: lotus_sync_status
+      changed_when: false
       become_user: "{{ lotus_user }}"
       become: true
 
@@ -17,7 +18,7 @@
       when: "'Done!' in lotus_sync_status.stdout"
 
     - name: If Lotus is not synchronized, attempt to get the current stage and block height from the output.
-      set_fact:
+      ansible.builtin.set_fact:
         lotus_sync_stage: "{{ lotus_sync_status.stdout | regex_search('Stage: (.+)$', multiline=True) | regex_replace('^Stage: ', '') }}"
         lotus_sync_height: "{{ lotus_sync_status.stdout | regex_findall('Height: (\\d+)') | first }}"
       when: "'Done!' not in lotus_sync_status.stdout"
@@ -27,10 +28,14 @@
         msg: "Lotus daemon is not synchronised yet. "
       when: "'Done!' not in lotus_sync_status.stdout"
   rescue:
-    - debug:
+    - name: Let the user knowe we haven't synced yet
+      ansible.builtin.debug:
         msg: "Lotus daemon is not synchronised yet. Retrying in 30 seconds..."
-    - debug:
+    - name: Print Lotus sync stage
+      ansible.builtin.debug:
         msg: "We are in stage {{ lotus_sync_stage }}. For more details, run `lotus sync status` on your node."
-    - pause:
+    - name: Pause for 30 seconds before retrying
+      ansible.builtin.pause:
         seconds: 30
-    - include_tasks: 08-check_lotus_synced.yml
+    - name: Loop back to the beginning
+      ansible.builtin.include_tasks: 08-check_lotus_synced.yml
