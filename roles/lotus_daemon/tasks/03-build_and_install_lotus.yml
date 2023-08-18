@@ -41,22 +41,18 @@
     build_flags: "export FFI_USE_MULTICORE_SDR=0 ; export RUST_GPU_TOOLS_CUSTOM_GPU='{{ gpu_details }}'"
   when: not has_sha256 and not has_sha_ni
 
-# TODO(bug): We build the Lotus repo as root to work around an Ansible bug - https://github.com/ansible/ansible/issues/80233
-# This is not ideal long term. We should be able to build as the lotus_user.
-
-# - name: Ensure Lotus checkout directory exists and is owned by lotus_user
-#   ansible.builtin.file:
-#     path: "{{ build_dir }}/lotus"
-#     state: directory
-#     owner: "{{ lotus_user }}"
-#     group: "{{ lotus_user }}"
-#     mode: '0755'
-
 - name: Print build flags
   ansible.builtin.debug:
     msg:
       - "We will build lotusd with these build flags: {{ build_flags }}."
       - "Mainnet: {{ not use_calibrationnet }}"
+
+- name: Get and detect information about the Lotus user
+  user:
+    name: "{{ lotus_user }}"
+    state: present
+  check_mode: true
+  register: lotus_user_details
 
 - name: Check out Lotus
   ansible.builtin.git:
@@ -66,6 +62,7 @@
     accept_newhostkey: true
     recursive: true
   become: true
+  become_user: "{{ lotus_user }}"
 
 # If we have a version of Lotus installed, but our configuration indicates we should have a different version installed, we need to build Lotus.
 # If Lotus isn't installed, we need to build it and install it.
@@ -90,6 +87,8 @@
     chdir: "{{ build_dir }}/lotus"
     target: clean
   when: lotus_build_required | default(false)
+  become: true
+  become_user: "{{ lotus_user }}"
 
 - name: Build Lotus for mainnet
   ansible.builtin.shell:
@@ -97,6 +96,8 @@
     chdir: "{{ build_dir }}/lotus"
     executable: /bin/bash
   when: not use_calibrationnet and lotus_build_required | default(false)
+  become: true
+  become_user: "{{ lotus_user }}"
 
 - name: Build Lotus for calibnet
   ansible.builtin.shell:
@@ -104,6 +105,8 @@
     chdir: "{{ build_dir }}/lotus"
     executable: /bin/bash
   when: use_calibrationnet and lotus_build_required | default(false)
+  become: true
+  become_user: "{{ lotus_user }}"
 
 - name: Install Lotus
   community.general.make:
@@ -111,6 +114,7 @@
     target: install
   when: lotus_build_required | default(false)
   notify: Restart Lotus daemon
+  become: true
 
 - name: Flush handlers to restart Lotus if needed
   ansible.legacy.meta: flush_handlers

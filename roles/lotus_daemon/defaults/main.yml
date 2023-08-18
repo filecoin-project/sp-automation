@@ -26,7 +26,7 @@ lotus_daemon_port: 1234
 lotus_libp2p_port: 6665
 
 # Build directory for building software. Originally "${INSTALL_DIR}".
-build_dir: "/usr/local/src/"
+build_dir: "{{ lotus_user_details.home }}/src/"
 
 # Location for the Lotus log file(s)
 log_dir: "/var/log/lotus"
@@ -35,7 +35,7 @@ log_dir: "/var/log/lotus"
 lotus_backup_base_path: "/opt/backup"
 
 # Location for lotus' chain and data repository. The chain is stored under lotus_path. This requires fast storage (SSD or NVMe).
-lotus_path: "/home/{{ lotus_user }}/.lotus{% if use_calibrationnet %}_calibnet{% endif %}"
+lotus_path: "{{ lotus_user_details.home }}/.lotus{% if use_calibrationnet %}_calibnet{% endif %}"
 
 # Where to store the API token for Lotus.
 lotus_api_token_file: "{{ lotus_path }}/api_token"
