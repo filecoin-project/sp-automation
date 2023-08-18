@@ -45,7 +45,7 @@ param_cache: "/opt/cache/param_cache"
 parent_cache: "/opt/cache/parent_cache"
 
 # Location for lotus miner's data repository.
-lotus_miner_path: "/home/{{ lotus_user }}/.lotusminer{% if use_calibrationnet %}_calibnet{% endif %}"
+lotus_miner_path: "{{ lotus_user_details.home }}/.lotusminer{% if use_calibrationnet %}_calibnet{% endif %}"
 
 # Skip wallet creation, chain sync and import and similar tasks. Just test building the software.
 smoketest: false

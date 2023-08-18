@@ -1,5 +1,12 @@
 ---
 # tasks ansible.builtin.file for lotus_miner
+- name: Get and detect information about the Lotus user
+  user:
+    name: "{{ lotus_user }}"
+    state: present
+  check_mode: true
+  register: lotus_user_details
+
 - name: Ensure the lotus_miner_path exists
   ansible.builtin.file:
     path: "{{ lotus_miner_path }}"
