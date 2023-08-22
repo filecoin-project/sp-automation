@@ -1,0 +1,18 @@
+---
+# tasks file for yugabyteDB
+
+- name: Download YugabyteDB binaries
+  get_url:
+    url: "{{ yugabyte_download_url }}"
+    dest: "{{ yugabyte_download_dest }}"
+    mode: 0755
+  register: yugabyte_download
+
+- name: Extract YugabyteDB binaries
+  ansible.builtin.unarchive:
+    src: "{{ yugabyte_download_dest }}"
+    dest: "{{ yugabyte_install_dir }}"
+    remote_src: yes
+    copy: no
+    creates: "{{ yugabyte_install_dir }}/bin/yb-ctl"
+  when: yugabyte_download.changed

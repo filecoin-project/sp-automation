@@ -8,9 +8,9 @@ create_lotus_system_user: true
 lotus_git_repo: "https://github.com/filecoin-project/lotus.git"
 
 # Check which version of Lotus matches with which version of Boost and Go: https://boost.filecoin.io/getting-started
-lotus_version: "v1.23.2"
+lotus_version: "v1.23.3"
 golang_version: "1.20.4"
-boost_version: "v1.7.2"
+boost_version: "v2.0.0"
 
 # Build Lotus for Calibration testnet instead of mainnet: true / false
 # if "true", use the Faucet to give your wallets test FIL: https://faucet.calibration.fildev.network/

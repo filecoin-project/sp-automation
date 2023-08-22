@@ -5,4 +5,5 @@
 
   roles:
     #- zorlin.lotus_daemon
-    - zorlin.lotus_miner
+    #- zorlin.lotus_miner
+    - zorlin.yugabytedb

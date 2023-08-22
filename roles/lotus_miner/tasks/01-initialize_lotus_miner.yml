@@ -39,6 +39,15 @@
   become: true
   changed_when: false
 
+- name: If either wallet fact exists, check that all wallet facts exist
+  ansible.builtin.assert:
+    that:
+      - ansible_local.owner_wallet_address.wallet.address is defined
+      - ansible_local.worker_wallet_address.wallet.address is defined
+  when:
+    ansible_local.owner_wallet_address.wallet.address is defined is defined or 
+    ansible_local.worker_wallet_address.wallet.address is defined
+
 - name: If the wallet list is empty, set number_of_wallets to zero
   ansible.builtin.set_fact:
     number_of_wallets: 0
@@ -72,6 +81,8 @@
   become_user: "{{ lotus_user }}"
   become: true
   changed_when: false
+  # We use the same conditional here, as at this point in the run number_of_wallets hasn't technically changed.
+  when: number_of_wallets == 0 or number_of_wallets == 1
 
 - name: Set the addresses for the owner and worker wallets
   ansible.builtin.set_fact:

@@ -1,0 +1,16 @@
+---
+- name: Converge
+  hosts: all
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Ensure all packages are up to date
+      ansible.builtin.apt:
+        upgrade: dist
+
+    - name: Include zorlin.yugabytedb
+      ansible.builtin.include_role:
+        name: "zorlin.yugabytedb"
