@@ -24,6 +24,14 @@
     group: "{{ lotus_group }}"
     mode: '0755'
 
+- name: Ensure Ansible facts directory exists
+  ansible.builtin.file:
+    path: "/etc/ansible/facts.d"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
 - name: List existing wallets
   ansible.builtin.shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet list"
   register: wallet_list
