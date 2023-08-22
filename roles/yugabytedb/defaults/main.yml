@@ -1,2 +1,9 @@
 ---
 # defaults file for yugabyteDB
+# yugabyte_version: 
+
+yugabyte_download_url: https://downloads.yugabyte.com/releases/2.18.2.1/yugabyte-2.18.2.1-b1-linux-x86_64.tar.gz
+
+yugabyte_download_dest: /var/tmp/yugabyte.tar.gz
+
+yugabyte_install_dir: /opt/yugabytedb

@@ -1,6 +1,6 @@
 ---
-- name: Deploy Lotus
-  hosts: lotus_primary
+- name: Deploy YugabyteDB
+  hosts: yugabytedb
   become: true
 
   roles:

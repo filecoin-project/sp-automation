@@ -8,11 +8,16 @@
     mode: 0755
   register: yugabyte_download
 
+- name: Ensure YugabyteDB directory exists
+  ansible.builtin.file:
+    path: "{{ yugabyte_install_dir }}"
+    state: directory
+    mode: 0755
+
 - name: Extract YugabyteDB binaries
   ansible.builtin.unarchive:
     src: "{{ yugabyte_download_dest }}"
     dest: "{{ yugabyte_install_dir }}"
     remote_src: yes
-    copy: no
+    extra_opts: ['--strip-components=1']
     creates: "{{ yugabyte_install_dir }}/bin/yb-ctl"
-  when: yugabyte_download.changed
