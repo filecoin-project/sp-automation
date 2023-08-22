@@ -21,3 +21,8 @@
     remote_src: yes
     extra_opts: ['--strip-components=1']
     creates: "{{ yugabyte_install_dir }}/bin/yb-ctl"
+  register: yugabyte_extract
+
+- name: Run post-install script
+  ansible.builtin.shell: "{{ yugabyte_install_dir }}/bin/post_install.sh"
+  when: yugabyte_extract.changed
