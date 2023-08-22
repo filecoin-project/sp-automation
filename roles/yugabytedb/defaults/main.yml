@@ -1,5 +1,6 @@
 ---
 # defaults file for yugabyteDB
+# Version not used yet
 # yugabyte_version: 
 
 yugabyte_download_url: https://downloads.yugabyte.com/releases/2.18.2.1/yugabyte-2.18.2.1-b1-linux-x86_64.tar.gz
@@ -7,3 +8,17 @@ yugabyte_download_url: https://downloads.yugabyte.com/releases/2.18.2.1/yugabyte
 yugabyte_download_dest: /var/tmp/yugabyte.tar.gz
 
 yugabyte_install_dir: /opt/yugabytedb
+yugabyte_log_dir: /var/log/yugabytedb
+yugabyte_data_dir: /var/lib/yugabytedb
+
+yugabyte_user: yugabyte
+
+yugabyte_group: yugabyte
+
+# We specify which bind interface is in use in order to determine which interface we pull IP address info from
+# - see flagfile.conf.j2 template for an example of where this is used.
+# ens18 is a good guess for a lot of bare metal machines, but is likely to be wrong so we should encourage the user to
+# set this for themselves.
+yugabyte_bind_interface: ens18
+
+yugabyte_tablet_rpc_port: 29814

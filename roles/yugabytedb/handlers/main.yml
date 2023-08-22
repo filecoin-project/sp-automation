@@ -1,2 +1,15 @@
 ---
 # handlers file for yugabyteDB
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Reload YugabyteDB master
+  ansible.builtin.service:
+    name: yugabytedb-master
+    state: reloaded
+
+- name: Reload YugabyteDB tserver
+  ansible.builtin.service:
+    name: yugabytedb-tserver
+    state: reloaded

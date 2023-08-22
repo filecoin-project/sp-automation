@@ -1,0 +1,3 @@
+--master_addresses={% for host in groups['yugabytedb_master'] %}{{ hostvars[inventory_hostname]['ansible_' + yugabyte_bind_interface]['ipv4']['address'] }}:{{ yugabyte_master_port }}{% if not loop.last %},{% endif %}{% endfor %}
+--rpc_bind_addresses={{ hostvars[inventory_hostname]['ansible_' + yugabyte_bind_interface]['ipv4']['address'] }}:{{ yugabyte_master_rpc_port }}
+--fs_data_dirs={{ yugabyte_data_dir }}

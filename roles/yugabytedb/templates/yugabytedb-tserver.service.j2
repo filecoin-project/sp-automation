@@ -1,0 +1,16 @@
+[Unit]
+Description=YugabyteDB Tablet Server
+After=network-online.target
+Wants=network-online.target systemd-networkd-wait-online.service
+
+[Service]
+User={{ yugabyte_user }}
+Group={{ yugabyte_group }}
+Restart=on-failure
+RestartSec=3s
+ExecStart={{ yugabyte_install_dir }}/bin/yb-tserver --flagfile /etc/yugabytedb/tserver.conf
+StandardOutput=append:{{ yugabyte_log_dir }}/yb-tserver.log
+StandardError=append:{{ yugabyte_log_dir }}/yb-tserver.log
+
+[Install]
+WantedBy=multi-user.target

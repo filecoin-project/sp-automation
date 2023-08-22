@@ -1,0 +1,16 @@
+[Unit]
+Description=YugabyteDB Master
+After=network-online.target
+Wants=network-online.target systemd-networkd-wait-online.service
+
+[Service]
+User={{ yugabyte_user }}
+Group={{ yugabyte_group }}
+Restart=on-failure
+RestartSec=3s
+ExecStart={{ yugabyte_install_dir }}/bin/yb-master --flagfile /etc/yugabytedb/master.conf
+StandardOutput=append:{{ yugabyte_log_dir }}/yb-master.log
+StandardError=append:{{ yugabyte_log_dir }}/yb-master.log
+
+[Install]
+WantedBy=multi-user.target

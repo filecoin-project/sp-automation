@@ -1,0 +1,9 @@
+---
+# Configuration for YugabyteDB Master nodes
+yugabyte_bind_interface: ens18
+
+# Port settings for YugabyteDB. The defaults should be fine, but feel free to override these.
+# Please do not change these on a running cluster unless you know what you are doing and why.
+yugabyte_master_port: 7100
+yugabyte_master_rpc_port: "{{ yugabyte_master_port }}"
+yugabyte_tserver_rpc_port: 29814

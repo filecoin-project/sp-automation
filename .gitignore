@@ -1,5 +1,6 @@
 **/secrets.yml
 **/secret.yml
 group_vars/all
+group_vars/yugabytedb
 host_vars/*
 inventory

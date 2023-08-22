@@ -1,6 +1,29 @@
 ---
 # tasks file for yugabyteDB
 
+# We need `acl` for become_user to work correctly.
+- name: Install prerequisites
+  package:
+    name: acl
+    state: present
+
+- name: Ensure yugabyte group exists
+  ansible.builtin.group:
+    name: "{{ yugabyte_group }}"
+    system: true
+    state: present
+
+- name: Ensure Yugabyte user exists
+  ansible.builtin.user:
+    name: "{{ yugabyte_user }}"
+    comment: "Yugabyte Daemon User"
+    shell: /bin/bash
+    system: true
+    createhome: true
+    group: "{{ yugabyte_group }}"
+    groups: "adm"
+    append: true
+
 - name: Download YugabyteDB binaries
   get_url:
     url: "{{ yugabyte_download_url }}"
@@ -18,6 +41,8 @@
   ansible.builtin.unarchive:
     src: "{{ yugabyte_download_dest }}"
     dest: "{{ yugabyte_install_dir }}"
+    owner: "{{ yugabyte_user }}"
+    group: "{{ yugabyte_group }}"
     remote_src: yes
     extra_opts: ['--strip-components=1']
     creates: "{{ yugabyte_install_dir }}/bin/yb-ctl"
@@ -26,3 +51,77 @@
 - name: Run post-install script
   ansible.builtin.shell: "{{ yugabyte_install_dir }}/bin/post_install.sh"
   when: yugabyte_extract.changed
+  become: true
+  become_user: "{{ yugabyte_user }}"
+
+- name: Ensure /etc/yugabytedb exists
+  ansible.builtin.file:
+    path: /etc/yugabytedb
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Ensure YugabyteDB data directory exists
+  ansible.builtin.file:
+    path: "{{ yugabyte_data_dir }}"
+    state: directory
+    owner: "{{ yugabyte_user }}"
+    group: "{{ yugabyte_group }}"
+    mode: 0755
+
+- name: Ensure YugabyteDB log directory exists
+  ansible.builtin.file:
+    path: "{{ yugabyte_log_dir }}"
+    state: directory
+    owner: "{{ yugabyte_user }}"
+    group: "{{ yugabyte_group }}"
+    mode: 0755
+
+# TODO(refactor): Split this into its own tasksfile
+- name: Install master configuration file
+  template:
+    src: master.conf.j2
+    dest: "/etc/yugabytedb/master.conf"
+  when: "'yugabytedb_master' in group_names"
+  notify: Reload YugabyteDB master
+
+- name: Install YugabyteDB master systemd service unit file
+  ansible.builtin.template:
+    src: yugabytedb-master.service.j2
+    dest: /etc/systemd/system/yugabytedb-master.service
+  notify:
+    - Reload systemd
+  when: "'yugabytedb_master' in group_names"
+
+- name: Ensure YugabyteDB master systemd service is started
+  ansible.builtin.service:
+    name: yugabytedb-master
+    state: started
+    enabled: true
+    daemon_reload: true
+  when: "'yugabytedb_master' in group_names"
+
+# TODO(refactor): Split this into its own tasksfile
+- name: Install tserver configuration file
+  template:
+    src: tserver.conf.j2
+    dest: "/etc/yugabytedb/tserver.conf"
+  when: "'yugabytedb_tserver' in group_names"
+  notify: Reload YugabyteDB tserver
+
+- name: Install YugabyteDB tserver systemd service unit file
+  ansible.builtin.template:
+    src: yugabytedb-tserver.service.j2
+    dest: /etc/systemd/system/yugabytedb-tserver.service
+  notify:
+    - Reload systemd
+  when: "'yugabytedb_tserver' in group_names"
+
+- name: Ensure YugabyteDB tserver systemd service is started
+  ansible.builtin.service:
+    name: yugabytedb-tserver
+    state: started
+    enabled: true
+    daemon_reload: true
+  when: "'yugabytedb_tserver' in group_names"

@@ -20,9 +20,13 @@ git clone https://github.com/ng-solutions-architecture/sp-stack-automation.git &
 ```
 cp ansible/inventory.example ansible/inventory && editor ansible/inventory
 ```
-- Copy `ansible/group_vars/all.example` to `ansible/group_vars/all` and edit it to suit your needs.
+- Copy the global configuration - `ansible/group_vars/all.example` to `ansible/group_vars/all` and edit it to suit your needs.
 ```
 cp ansible/group_vars/all.example ansible/group_vars/all && editor ansible/group_vars/all
+```
+- Copy the YugabyteDB configuration - `ansible/group_vars/yugabytedb.example` to `ansible/group_vars/yugabytedb` and edit it to suit your needs.
+```
+cp ansible/group_vars/yugabytedb.example ansible/group_vars/yugabytedb && editor ansible/group_vars/yugabytedb`
 ```
 - Change into the `ansible` directory.
 ```
