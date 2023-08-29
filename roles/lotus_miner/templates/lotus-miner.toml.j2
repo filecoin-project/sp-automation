@@ -7,11 +7,13 @@
   AllowAddPiece = false
   AllowPreCommit1 = false
   AllowPreCommit2 = false
-  AllowCommit = true
-  AllowUnseal = true
-  AllowReplicaUpdate = true
-  AllowProveReplicaUpdate2 = true
+  AllowCommit = false
+  AllowUnseal = false
+  AllowReplicaUpdate = false
+  AllowProveReplicaUpdate2 = false
 
 [Sealing]
   CollateralFromMinerBalance = true
   DisableCollateralFallback = false
+  BatchPreCommits = false
+  AggregateCommits = false

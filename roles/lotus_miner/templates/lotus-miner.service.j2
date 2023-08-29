@@ -10,6 +10,8 @@ User={{ lotus_user }}
 Group={{ lotus_user }}
 ExecStartPre=/bin/sleep 30
 ExecStart=/usr/local/bin/lotus-miner --miner-repo {{ lotus_miner_path }} run
+Restart=on-failure
+RestartSec=10
 
 StandardOutput=append:{{ log_dir }}/lotusminer.log
 StandardError=append:{{ log_dir }}/lotusminer.log
