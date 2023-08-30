@@ -84,7 +84,7 @@
     src: master.conf.j2
     dest: "/etc/yugabytedb/master.conf"
   when: "'yugabytedb_master' in group_names"
-  notify: Reload YugabyteDB master
+  notify: Restart YugabyteDB master
 
 - name: Install YugabyteDB master systemd service unit file
   ansible.builtin.template:
@@ -108,7 +108,7 @@
     src: tserver.conf.j2
     dest: "/etc/yugabytedb/tserver.conf"
   when: "'yugabytedb_tserver' in group_names"
-  notify: Reload YugabyteDB tserver
+  notify: Restart YugabyteDB tserver
 
 - name: Install YugabyteDB tserver systemd service unit file
   ansible.builtin.template:

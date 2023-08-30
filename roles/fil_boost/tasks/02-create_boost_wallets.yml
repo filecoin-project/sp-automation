@@ -1,0 +1,72 @@
+---
+# create_boost_wallets ${INSTALL_DIR}
+# set_boost_vars
+# send_funds_to_boost
+# set_boost_control_wallet
+# install_node ${INSTALL_DIR} 
+# build_boost ${INSTALL_DIR}
+
+# check if the wallets exist already
+# check if we have less than four wallets
+# check if we have three wallets (in which case throw an error)
+# check if we have four wallets (in which case do nothing, but record the wallet addresses)
+
+- name: List existing wallets
+  ansible.builtin.shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet list"
+  register: wallet_list
+  become_user: "{{ lotus_user }}"
+  become: true
+  changed_when: false
+
+- name: If the wallet list is empty, set number_of_wallets to zero
+  ansible.builtin.set_fact:
+    number_of_wallets: 0
+  when: wallet_list.stdout == ""
+
+- name: If the wallet list is not empty, set number_of_wallets to the number of wallets in the list
+  ansible.builtin.set_fact:
+    number_of_wallets: "{{ wallet_list.stdout_lines[1:] | select('search', 'FIL') | list | length }}"
+  when: wallet_list.stdout != ""
+
+- name: If the deals wallet does not exist yet, create it.
+  ansible.builtin.shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet new bls"
+  become_user: "{{ lotus_user }}"
+  become: true
+  register: create_deals_wallet
+  changed_when: create_deals_wallet.rc == 0
+  when: number_of_wallets == 2
+
+- name: If we have 3 wallets, something weird has happened, let the user know
+  ansible.builtin.assert:
+    that:
+      - number_of_wallets != 3
+    fail_msg: "You appear to have an unknown set of wallets in your Lotus installation. Please check your Lotus installation and try again or ask us for help."
+
+# TODO(BUG) THIS BEHAVIOUR WILL NOT BE CORRECT. We don't actually know what the end result will look like so this parsing is a (bad) guess for now.
+- name: If we have 4 wallets, do nothing, but record the wallet addresses
+  ansible.builtin.set_fact:
+    deals_wallet_address: "{{ wallet_list.stdout_lines[1] | regex_replace(' +', ' ') | split(' ')[1] }}"
+    collateral_wallet_address: "{{ wallet_list.stdout_lines[2] | regex_replace(' +', ' ') | split(' ')[1] }}"
+  when: number_of_wallets == 4
+
+- name: If the collateral wallet does not exist yet, create it.
+  ansible.builtin.shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet new bls"
+  become_user: "{{ lotus_user }}"
+  become: true
+  register: create_collateral_wallet
+  changed_when: create_collateral_wallet.rc == 0
+  # This when conditional is a little silly, but it should work consistently. We always want to create this second wallet if we create the first one.
+  when: number_of_wallets == 2 or number_of_wallets == 3
+
+- name: Set the addresses for the deals and collateral wallets
+  ansible.builtin.set_fact:
+    deals_wallet_address: "{{ create_deals_wallet.stdout }}"
+    collateral_wallet_address: "{{ create_collateral_wallet.stdout }}"
+
+- name: Print deals and collateral wallet addresses
+  ansible.builtin.debug:
+    msg:
+      - "Deals wallet address: {{ deals_wallet_address }}"
+      - "Collateral wallet address: {{ collateral_wallet_address }}"
+  when: deals_wallet_address is defined and collateral_wallet_address is defined
+

@@ -3,3 +3,9 @@
 
 # Skip wallet creation, chain sync and import and similar tasks. Just test building the software.
 smoketest: false
+
+# Locations for Boost directories
+boost_client_repo: "{{ lotus_user_details.home }}/.boost_client"
+boost_bitswap_repo: "{{ lotus_user_details.home }}/.boost_bitswap"
+boost_path: "{{ lotus_user_details.home }}/.boost"
+

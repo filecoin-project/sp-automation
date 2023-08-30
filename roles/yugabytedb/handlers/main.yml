@@ -4,12 +4,12 @@
   ansible.builtin.systemd:
     daemon_reload: true
 
-- name: Reload YugabyteDB master
+- name: Restart YugabyteDB master
   ansible.builtin.service:
     name: yugabytedb-master
-    state: reloaded
+    state: restarted
 
-- name: Reload YugabyteDB tserver
+- name: Restart YugabyteDB tserver
   ansible.builtin.service:
     name: yugabytedb-tserver
-    state: reloaded
+    state: restarted

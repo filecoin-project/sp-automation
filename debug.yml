@@ -1,9 +1,10 @@
 ---
-- name: Deploy YugabyteDB
-  hosts: yugabytedb
+- name: Debug playbook
+  hosts: 
   become: true
 
   roles:
     #- zorlin.lotus_daemon
     #- zorlin.lotus_miner
-    - zorlin.yugabytedb
+    #- zorlin.yugabytedb
+    - zorlin.fil_boost

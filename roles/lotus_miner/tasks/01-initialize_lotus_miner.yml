@@ -114,27 +114,6 @@
   ansible.builtin.debug:
     msg: "{{ miner_info.stderr_lines }}"
   when: miner_info.stderr_lines is defined
-  
-# We deliberately only initialize the SP with specific error messages. This is to avoid accidentally initialising the SP when we don't need to.
-- name: Empty cache folders for initialisation
-  when: "miner_info.stderr_lines[0] == 'ERROR: could not get API info for StorageMiner: repo directory does not exist. Make sure your configuration is correct'"
-  block:
-    - name: Scan for files in the cache folders
-      ansible.builtin.find:
-        paths: 
-          - "{{ param_cache }}"
-          - "{{ parent_cache }}"
-        file_type: "file"
-        patterns: "*"
-      register: cache_files_to_delete
-      become_user: "{{ lotus_user }}"
-      become: true
-    
-    - name: Delete ansible.builtin.files in the cache folders
-      ansible.builtin.file:
-        path: "{{ item.path }}"
-        state: absent
-      with_items: "{{ cache_files_to_delete.files }}"
 
 - name: Initialize our SP
   ansible.builtin.include_tasks: 01b-initialize_sp.yml

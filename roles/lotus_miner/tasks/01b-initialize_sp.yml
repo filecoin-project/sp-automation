@@ -34,6 +34,29 @@
     - Restart Lotus miner
   become: true
 
+# TODO(feat): Add the option to download using `export IPFS_GATEWAY=http://localhost:8080/ipfs/`
+- name: Download proof parameters
+  ansible.builtin.shell:
+    cmd: "lotus-miner fetch-params 32GiB"
+    executable: /bin/bash
+    chdir: "{{ lotus_path }}"
+  become_user: "{{ lotus_user }}"
+  become: true
+  environment:
+    LOTUS_PATH: "{{ lotus_path }}"
+    FIL_PROOFS_PARAMETER_CACHE: "{{ param_cache }}"
+    FIL_PROOFS_PARENT_CACHE: "{{ parent_cache }}"
+  async: 86400 # 1 day
+  poll: 5
+  register: lotus_proof_download_status
+
+- name: Check that the proof download worked correctly
+  ansible.builtin.assert:
+    that:
+      - lotus_proof_download_status.rc == 0
+    fail_msg: "The proof download did not appear to work correctly. Please check the logs and try again or contact us if you're having continued issues."
+    success_msg: "Proof download was successful, we will now proceed to initialise Lotus Miner."
+
 - name: Initialize Lotus miner
   ansible.builtin.shell:
     cmd: "lotus-miner --miner-repo {{ lotus_miner_path }} init --no-local-storage --owner={{ owner_wallet_address }} --worker={{ worker_wallet_address }} --sector-size={{ sector_size }}"
@@ -45,5 +68,13 @@
     LOTUS_PATH: "{{ lotus_path }}"
     FIL_PROOFS_PARAMETER_CACHE: "{{ param_cache }}"
     FIL_PROOFS_PARENT_CACHE: "{{ parent_cache }}"
-    LOTUS_SEALING_AGGREGATECOMMITS: "false"
-    LOTUS_SEALING_BATCHPRECOMMITS: "false"
+  async: 86400 # 1 day
+  poll: 5
+  register: lotus_miner_init_status
+
+- name: Check that the Lotus miner was initialized correctly
+  ansible.builtin.assert:
+    that:
+      - lotus_miner_init_status.rc == 0
+    fail_msg: "The Lotus miner did not appear to initialize correctly. Please check the logs and try again or contact us if you're having continued issues."
+    success_msg: "Lotus miner initialization was successful, we will now proceed to start the Lotus miner."

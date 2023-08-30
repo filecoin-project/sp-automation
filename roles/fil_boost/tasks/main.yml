@@ -14,3 +14,14 @@
 - name: Create Boost wallets
   include_tasks: 02-create_boost_wallets.yml
   when: not smoketest
+
+- name: Send funds to Boost
+  include_tasks: 03-send_funds_to_boost.yml
+  when: not smoketest
+
+- name: Set Boost control wallet
+  include_tasks: 04-set_boost_control_wallet.yml
+  when: not smoketest
+
+- name: Build Boost
+  include_tasks: 05-build_boost.yml
