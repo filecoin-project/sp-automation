@@ -1,6 +1,6 @@
 ---
 - name: Debug playbook
-  hosts: 
+  hosts: boost
   become: true
 
   roles:
