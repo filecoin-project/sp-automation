@@ -14,6 +14,9 @@ log_dir: "/var/log/lotus"
 # Whether to create the Lotus system user defined above automatically
 create_lotus_system_user: true
 
+# Skip wallet creation, chain sync and import and similar tasks. Just test building the software.
+smoketest: false
+
 # What Node.JS version to use
 nodejs_version: 18.x
 nodejs_install_npm_user: "{{ lotus_user }}"
