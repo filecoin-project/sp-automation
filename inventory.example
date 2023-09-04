@@ -1,2 +1,14 @@
 [lotus_primary]
 localhost
+
+[boost]
+localhost
+
+[yugabytedb]
+localhost
+
+[yugabytedb_master]
+localhost
+
+[yugabytedb_tserver]
+localhost
