@@ -3,4 +3,5 @@
 --enable_ysql 
 --pgsql_proxy_bind_address={{ hostvars[inventory_hostname]['ansible_' + yugabyte_bind_interface]['ipv4']['address'] }}:5433 
 --cql_proxy_bind_address={{ hostvars[inventory_hostname]['ansible_' + yugabyte_bind_interface]['ipv4']['address'] }}:9042 
+--ysql_enable_auth=true
 --fs_data_dirs={{ yugabyte_data_dir }}
