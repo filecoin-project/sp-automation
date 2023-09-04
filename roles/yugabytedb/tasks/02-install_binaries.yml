@@ -1,0 +1,30 @@
+---
+- name: Download YugabyteDB binaries
+  get_url:
+    url: "{{ yugabyte_download_url }}"
+    dest: "{{ yugabyte_download_dest }}"
+    mode: 0755
+  register: yugabyte_download
+
+- name: Ensure YugabyteDB directory exists
+  ansible.builtin.file:
+    path: "{{ yugabyte_install_dir }}"
+    state: directory
+    mode: 0755
+
+- name: Extract YugabyteDB binaries
+  ansible.builtin.unarchive:
+    src: "{{ yugabyte_download_dest }}"
+    dest: "{{ yugabyte_install_dir }}"
+    owner: "{{ yugabyte_user }}"
+    group: "{{ yugabyte_group }}"
+    remote_src: yes
+    extra_opts: ['--strip-components=1']
+    creates: "{{ yugabyte_install_dir }}/bin/yb-ctl"
+  register: yugabyte_extract
+
+- name: Run post-install script
+  ansible.builtin.shell: "{{ yugabyte_install_dir }}/bin/post_install.sh"
+  when: yugabyte_extract.changed
+  become: true
+  become_user: "{{ yugabyte_user }}"

@@ -1,0 +1,23 @@
+---
+- name: Install tserver configuration file
+  template:
+    src: tserver.conf.j2
+    dest: "/etc/yugabytedb/tserver.conf"
+  when: "'yugabytedb_tserver' in group_names"
+  notify: Restart YugabyteDB tserver
+
+- name: Install YugabyteDB tserver systemd service unit file
+  ansible.builtin.template:
+    src: yugabytedb-tserver.service.j2
+    dest: /etc/systemd/system/yugabytedb-tserver.service
+  notify:
+    - Reload systemd
+  when: "'yugabytedb_tserver' in group_names"
+
+- name: Ensure YugabyteDB tserver systemd service is started
+  ansible.builtin.service:
+    name: yugabytedb-tserver
+    state: started
+    enabled: true
+    daemon_reload: true
+  when: "'yugabytedb_tserver' in group_names"

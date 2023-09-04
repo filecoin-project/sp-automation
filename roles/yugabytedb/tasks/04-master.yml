@@ -1,0 +1,23 @@
+---
+- name: Install master configuration file
+  template:
+    src: master.conf.j2
+    dest: "/etc/yugabytedb/master.conf"
+  when: "'yugabytedb_master' in group_names"
+  notify: Restart YugabyteDB master
+
+- name: Install YugabyteDB master systemd service unit file
+  ansible.builtin.template:
+    src: yugabytedb-master.service.j2
+    dest: /etc/systemd/system/yugabytedb-master.service
+  notify:
+    - Reload systemd
+  when: "'yugabytedb_master' in group_names"
+
+- name: Ensure YugabyteDB master systemd service is started
+  ansible.builtin.service:
+    name: yugabytedb-master
+    state: started
+    enabled: true
+    daemon_reload: true
+  when: "'yugabytedb_master' in group_names"

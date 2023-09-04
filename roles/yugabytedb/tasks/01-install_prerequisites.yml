@@ -1,0 +1,23 @@
+---
+# We need `acl` for become_user to work correctly.
+- name: Install prerequisites
+  ansible.builtin.package:
+    name: acl
+    state: present
+
+- name: Ensure yugabyte group exists
+  ansible.builtin.group:
+    name: "{{ yugabyte_group }}"
+    system: true
+    state: present
+
+- name: Ensure Yugabyte user exists
+  ansible.builtin.user:
+    name: "{{ yugabyte_user }}"
+    comment: "Yugabyte Daemon User"
+    shell: /bin/bash
+    system: true
+    createhome: true
+    group: "{{ yugabyte_group }}"
+    groups: "adm"
+    append: true

@@ -1,0 +1,24 @@
+---
+- name: Ensure /etc/yugabytedb exists
+  ansible.builtin.file:
+    path: /etc/yugabytedb
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Ensure YugabyteDB data directory exists
+  ansible.builtin.file:
+    path: "{{ yugabyte_data_dir }}"
+    state: directory
+    owner: "{{ yugabyte_user }}"
+    group: "{{ yugabyte_group }}"
+    mode: 0755
+
+- name: Ensure YugabyteDB log directory exists
+  ansible.builtin.file:
+    path: "{{ yugabyte_log_dir }}"
+    state: directory
+    owner: "{{ yugabyte_user }}"
+    group: "{{ yugabyte_group }}"
+    mode: 0755
