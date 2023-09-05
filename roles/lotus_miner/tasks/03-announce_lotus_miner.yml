@@ -76,7 +76,7 @@
   register: lotus_announcement
   changed_when: false
   ignore_errors: false
-  when: (ready_for_mainnet and not use_calibrationnet) or use_calibrationnet
+  when: not last_announcement_file.stat.exists and ((ready_for_mainnet and not use_calibrationnet) or use_calibrationnet)
 
 - name: If we successfully announced, write the announcement to a file
   ansible.builtin.copy:
@@ -85,4 +85,4 @@
     owner: "{{ lotus_user }}"
     group: "{{ lotus_user }}"
     mode: 0600
-  when: lotus_announcement.rc == 0
+  when: ( lotus_announcement.rc | default(1) ) == 0
