@@ -111,14 +111,13 @@
 # Now that we have funds, we can initialise our SP
 - name: Check whether we need to initialise our SP by checking whether the miner token exists
   ansible.builtin.stat:
-    path: "{{ lotus_miner_path }}/config.toml"
+    path: "{{ lotus_miner_path }}/token"
   register: miner_token_exists
   changed_when: false
 
-
 - name: Initialize our SP
   ansible.builtin.include_tasks: 01b-initialize_sp.yml
-  when: "miner_info.stderr_lines[0] == 'ERROR: could not get API info for StorageMiner: repo directory does not exist. Make sure your configuration is correct'"
+  when: miner_token_exists.stat.exists == false
 
 # Now that we have an SP, we can configure our miner
 - name: Install initial miner configuration
