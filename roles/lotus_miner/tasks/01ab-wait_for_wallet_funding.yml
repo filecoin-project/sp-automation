@@ -1,0 +1,15 @@
+---
+- name: Get wallet balances
+  ansible.builtin.include_tasks: 01aa-get_wallet_balances.yml
+
+- name: If wallet balances do not have enough funds yet, print a message and loop
+  ansible.builtin.debug:
+    msg:
+      - "Current owner wallet balance: {{ owner_wallet_balance }} FIL [{{ owner_wallet_address }}]"
+      - "Current worker wallet balance: {{ worker_wallet_balance }} FIL [{{ worker_wallet_address }}]"
+      - "Waiting for both wallets to be funded with at least FIL = {{ wallet_fund_threshold }}"
+  when: "owner_wallet_balance | float < wallet_fund_threshold or worker_wallet_balance | float < wallet_fund_threshold"
+
+- name: Loop back to beginning
+  include_tasks: 01ab-wait_for_wallet_funding.yml
+  when: "owner_wallet_balance | float < wallet_fund_threshold or worker_wallet_balance | float < wallet_fund_threshold"

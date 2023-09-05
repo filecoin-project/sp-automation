@@ -8,6 +8,9 @@ Environment="GOLOG_FILE={{ log_dir }}/lotusminer.log"
 EnvironmentFile=/etc/default/lotus-miner
 User={{ lotus_user }}
 Group={{ lotus_user }}
+#TODO(bug): We need to wait for the lotus daemon to be ready before starting the miner
+# A future optimisation could include making Lotus miner itself wait for the API to be available (with a timeout of like 5s)
+# instead of exiting if it is not available yet.
 ExecStartPre=/bin/sleep 30
 ExecStart=/usr/local/bin/lotus-miner --miner-repo {{ lotus_miner_path }} run
 Restart=on-failure
