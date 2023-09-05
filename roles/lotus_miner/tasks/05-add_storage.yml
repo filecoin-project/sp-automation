@@ -30,6 +30,8 @@
 - name: Add storage to Lotus miner
   ansible.builtin.command:
     cmd: "lotus-miner storage attach --init --store {{ item }}"
+  environment:
+    LOTUS_MINER_PATH: "{{ lotus_miner_path }}"
   with_items: "{{ lotus_miner_storage_paths }}"
   register: lotus_miner_storage_attach
   become_user: "{{ lotus_user }}"
@@ -40,6 +42,8 @@
 - name: Print a list of Lotus-registered storage paths
   ansible.builtin.command:
     cmd: "lotus-miner storage list"
+  environment:
+    LOTUS_MINER_PATH: "{{ lotus_miner_path }}"
   register: lotus_miner_storage_list
   changed_when: false
   when: lotus_miner_storage_paths is defined

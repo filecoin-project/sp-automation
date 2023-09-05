@@ -2,7 +2,7 @@
 - name: Read Lotus API token from file
   ansible.builtin.command:
     cmd: "cat {{ lotus_api_token_file }}"
-  register: lotus_api_token
+  register: read_lotus_api_token
   become_user: "{{ lotus_user }}"
   become: true
   changed_when: false
@@ -11,16 +11,24 @@
 
 - name: If we successfully read a token, flatten the fact
   ansible.builtin.set_fact:
-    lotus_api_token: "{{ lotus_api_token.stdout }}"
-  when: lotus_api_token != ""
+    lotus_api_token: "{{ read_lotus_api_token.stdout }}"
+  when: read_lotus_api_token != "" and read_lotus_api_token.rc == 0
 
 - name: Create API token if we don't have one or if we have an invalid one
   # We run all these tasks if we are unable to find a seemingly valid API token.
-  when: lotus_api_token == "" or lotus_api_token == "null" or lotus_api_token == "undefined"
+  when:
+    - read_lotus_api_token.rc != 0 or
+      lotus_api_token is not defined or
+      lotus_api_token == "" or
+      lotus_api_token == "null" or
+      lotus_api_token == "undefined"
   block:
     - name: Create API token
       ansible.builtin.shell:
-        cmd: "set -o pipefail ; export LOTUS_PATH={{ lotus_path }} ; lotus auth api-info --perm admin | cut -d':' -f1 | cut -d'=' -f2"
+        cmd: "set -o pipefail ; lotus auth api-info --perm admin | cut -d':' -f1 | cut -d'=' -f2"
+        executable: /bin/bash
+      environment:
+        LOTUS_PATH: "{{ lotus_path }}"
       register: new_api_token
       become_user: "{{ lotus_user }}"
       become: true

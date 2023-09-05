@@ -1,0 +1,14 @@
+---
+# Ask Lotus Miner to check if we have any storage attached
+
+- name: Get a list of Lotus Miner storage paths
+  ansible.builtin.shell:
+    cmd: "lotus-miner storage list"
+    executable: /bin/bash
+  environment:
+    LOTUS_MINER_PATH: "{{ lotus_miner_path }}"
+  register: lotus_miner_storage_list
+  become_user: "{{ lotus_user }}"
+  become: true
+  changed_when: false
+  failed_when: false

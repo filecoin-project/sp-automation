@@ -34,8 +34,8 @@ sector_size: "32GiB"
 # Location for the Lotus log file(s)
 log_dir: "/var/log/lotus"
 
-# Where to store the API token for Lotus Miner.
-lotus_miner_api_token_file: "{{ lotus_miner_path }}/api_token"
+# Where to retrieve the API token for Lotus Miner.
+lotus_miner_api_token_file: "{{ lotus_miner_path }}/token"
 
 # Build directory for building software. Originally "${INSTALL_DIR}".
 build_dir: "/usr/local/src/"

@@ -10,6 +10,13 @@
     - Reload systemd
     - Restart Lotus miner
 
+- name: Ensure Lotus Miner is started
+  ansible.builtin.systemd:
+    name: lotus-miner
+    state: started
+    enabled: true
+  become: true
+
 # TODO(feat): We should more gracefully handle restarting Lotus miner.
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers

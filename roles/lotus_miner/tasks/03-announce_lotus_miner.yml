@@ -14,58 +14,16 @@
     lotus_miner_api_token: "{{ lotus_miner_api_token.stdout }}"
   when: lotus_miner_api_token.stdout != "" and lotus_miner_api_token.rc == 0
 
-- name: Create Lotus Miner API token if we don't have one or if we have an invalid one
-  # We run all these tasks if we are unable to find a seemingly valid API token.
-  when: lotus_miner_api_token.stdout == "" or lotus_miner_api_token.rc != 0
-  block:
-    # TODO(bug): We should find a way to figure out if the token already exists and skip this step if it does.
-    # Alternatively we could just assume it doesn't exist if {{ lotus_miner_api_token_file }} does not exist.
-    - name: Create Lotus Miner API token
-      ansible.builtin.command:
-        cmd: "lotus-miner auth create-token --perm admin"
-      register: new_miner_api_token
-      changed_when: false
-      become_user: "{{ lotus_user }}"
-      become: true
-
-    - name: Print API token
-      ansible.builtin.debug:
-        msg: "API token: {{ new_miner_api_token.stdout }}"
-
-    - name: Store API token as a variable if we retrieved it successfully
-      ansible.builtin.set_fact:
-        lotus_miner_api_token: "{{ new_miner_api_token.stdout }}"
-      when: 
-        - new_miner_api_token is defined
-        - new_miner_api_token.stdout | length > 0
-        - new_miner_api_token.rc == 0
-
-    - name: Write API token to file if we retrieved it successfully
-      ansible.builtin.copy:
-        content: "{{ new_miner_api_token.stdout }}"
-        dest: "{{ lotus_miner_api_token_file }}"
-        owner: "{{ lotus_user }}"
-        group: "{{ lotus_group }}"
-        mode: '0400'
-      when: 
-        - new_miner_api_token is defined
-        - new_miner_api_token.stdout | length > 0
-        - new_miner_api_token.rc == 0
-  
-    # Re-read the Lotus Miner API token now that we have created it
-    - name: Read Lotus Miner API token from file
-      ansible.builtin.command:
-        cmd: "cat {{ lotus_miner_api_token_file }}"
-      register: lotus_miner_api_token
-      become_user: "{{ lotus_user }}"
-      become: true
-      changed_when: false
-      ignore_errors: true
-      when: lotus_miner_api_token_file is defined
-
 - name: Set miner_api_info
   ansible.builtin.set_fact:
     miner_api_info: "{{ lotus_miner_api_token }}:/ip4/{{ lotus_miner_ip }}/tcp/{{ lotus_miner_port }}/http"
+
+- name: Check that we successfully read the Lotus Miner API token.
+  ansible.builtin.assert:
+    that:
+      - lotus_miner_api_token is defined
+      - lotus_miner_api_token.stdout is not defined
+    fail_msg: "We were unable to read the Lotus Miner API token from {{ lotus_miner_api_token_file }}. Please check the file exists and is readable by the lotus user."
 
 # Get our public IP address if we haven't grabbed it already earlier in a play
 - name: Get public IPv4 address using ifconfig.me
@@ -97,14 +55,34 @@
     msg: "You must set ready_for_mainnet to true in order to announce your mainnet miner on-chain. Check the docs for more information."
   when: not ready_for_mainnet and not use_calibrationnet
 
+- name: Check if we already have a last_announcement file (in which case we don't need to announce)
+  ansible.builtin.stat:
+    path: "{{ lotus_miner_path }}/last_announcement"
+  register: last_announcement_file
+  changed_when: false
+  when: (ready_for_mainnet and not use_calibrationnet) or use_calibrationnet
+
 # TODO(lint): ignore-errors: Use failed_when and specify error conditions instead of using ignore_errors.
 # ansible-lint is correct, this would be cleaner.
 - name: Announce Lotus miner
   ansible.builtin.shell:
-    cmd: "set -o pipefail ; export LOTUS_PATH={{ lotus_path }} ; lotus-miner actor set-addrs --announce={{ lotus_public_ip }}:{{ lotus_libp2p_port }}"  # noqa ignore-errors
+    cmd: "lotus-miner actor set-addrs /ip4/{{ lotus_public_ip }}/tcp/{{ lotus_libp2p_port }}"  # noqa ignore-errors
     executable: /bin/bash
+  environment:
+    LOTUS_PATH: "{{ lotus_path }}"
+    LOTUS_MINER_PATH: "{{ lotus_miner_path }}"
   become_user: "{{ lotus_user }}"
   become: true
+  register: lotus_announcement
   changed_when: false
-  ignore_errors: true
+  ignore_errors: false
   when: (ready_for_mainnet and not use_calibrationnet) or use_calibrationnet
+
+- name: If we successfully announced, write the announcement to a file
+  ansible.builtin.copy:
+    content: "{{ lotus_announcement.stdout }}"
+    dest: "{{ lotus_miner_path }}/last_announcement"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: 0600
+  when: lotus_announcement.rc == 0

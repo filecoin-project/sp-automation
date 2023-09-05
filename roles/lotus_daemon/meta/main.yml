@@ -52,4 +52,5 @@ dependencies:
   - name: "geerlingguy.nodejs"
   - name: "gantsign.golang"
   - name: "hurricanehrndz.rustup"
+    rustup_user: "{{ lotus_user }}"
 #  - name: "nvidia.nvidia_driver"

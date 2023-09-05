@@ -12,10 +12,6 @@
       - wallet_list.stdout != ""
   changed_when: false
 
-- name: Print entire wallet list
-  ansible.builtin.debug:
-    msg: "{{ wallet_list.stdout_lines }}"
-
 - name: Get owner wallet balance
   ansible.builtin.set_fact:
     owner_wallet_balance: "{{ wallet_list.stdout_lines | select('search', owner_wallet_address) | first | regex_search('\\b([0-9]+\\.?[0-9]*)\\s+FIL\\b') | regex_replace(' FIL', '') }}"

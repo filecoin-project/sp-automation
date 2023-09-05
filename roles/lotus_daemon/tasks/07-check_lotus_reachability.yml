@@ -22,8 +22,11 @@
   block:
     - name: Ask Lotus if it's publicly reachable
       ansible.builtin.shell:
-        cmd: "set -o pipefail ; export LOTUS_PATH={{ lotus_path }} ; lotus net reachability | grep 'Public'"
+        cmd: "set -o pipefail ; lotus net reachability | grep 'Public'"
+        executable: /bin/bash
       register: libp2p_reachability
+      environment:
+        LOTUS_PATH: "{{ lotus_path }}"
       changed_when: false
       become_user: "{{ lotus_user }}"
       become: true

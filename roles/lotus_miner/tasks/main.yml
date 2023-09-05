@@ -24,5 +24,9 @@
 - name: Announce Lotus miner
   ansible.builtin.include_tasks: 03-announce_lotus_miner.yml
 
+- name: Check if we have any storage attached
+  ansible.builtin.include_tasks: 04-check_storage.yml
+
 - name: Add storage
-  ansible.builtin.include_tasks: 04-add_storage.yml
+  ansible.builtin.include_tasks: 05-add_storage.yml
+  when: lotus_miner_storage_list.stdout == ""

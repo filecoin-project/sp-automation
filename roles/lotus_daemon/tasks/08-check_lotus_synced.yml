@@ -4,7 +4,9 @@
   block:
     - name: Wait for Lotus to be synced
       ansible.builtin.shell:
-        cmd: "export LOTUS_PATH={{ lotus_path }} ; lotus sync wait"
+        cmd: "lotus sync wait"
+      environment:
+        LOTUS_PATH: "{{ lotus_path }}"
       async: 86400 # 1 day
       poll: 5
       register: lotus_sync_status

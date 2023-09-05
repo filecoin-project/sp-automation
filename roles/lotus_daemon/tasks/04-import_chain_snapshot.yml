@@ -60,8 +60,10 @@
 
 - name: Import chain snapshot
   ansible.builtin.shell:
-    cmd: "export LOTUS_PATH={{ lotus_path }} ; nohup lotus daemon --halt-after-import --import-snapshot /home/{{ lotus_user }}/{{ chain_download_dir }}/latest-lotus-snapshot.zst > {{ log_dir }}/lotus-import-snapshot.log 2>&1"
+    cmd: "nohup lotus daemon --halt-after-import --import-snapshot /home/{{ lotus_user }}/{{ chain_download_dir }}/latest-lotus-snapshot.zst > {{ log_dir }}/lotus-import-snapshot.log 2>&1"
     executable: /bin/bash
+  environment:
+    LOTUS_PATH: "{{ lotus_path }}"
   async: 86400 # 1 day
   poll: 5
   become_user: "{{ lotus_user }}"
