@@ -37,6 +37,12 @@ lotus_daemon_port: 1234
 # Port for libp2p host to run on
 lotus_libp2p_port: 6665
 
+# Set a custom IPFS gateway to use for miner parameter download.
+# Must be the protocol and domain of the IPFS gateway, without anything after it. For example: "http://ipfs.io"
+# This is useful if you need to use a more local IPFS gateway (maybe one on your network) to download the initial parameters for Filecoin.
+# Leave it commented out if you do not explicitly need this feature and it will not be used.
+#ipfs_gateway: "http://localhost:8080"
+
 # Skip the NVIDIA driver reboot. This should be set to true unless you have a good reason to set it to false.
 nvidia_driver_skip_reboot: true
 
