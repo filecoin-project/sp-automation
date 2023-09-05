@@ -43,7 +43,9 @@
   when: number_of_wallets > 3
 
 - name: If the deals wallet does not exist yet, create it.
-  ansible.builtin.shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet new bls"
+  ansible.builtin.shell: "lotus wallet new bls"
+  environment:
+    LOTUS_PATH: "{{ lotus_path }}"
   become_user: "{{ lotus_user }}"
   become: true
   register: create_deals_wallet
@@ -51,7 +53,9 @@
   when: number_of_wallets == 2
 
 - name: If the collateral wallet does not exist yet, create it.
-  ansible.builtin.shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet new bls"
+  ansible.builtin.shell: "lotus wallet new bls"
+  environment:
+    LOTUS_PATH: "{{ lotus_path }}"
   become_user: "{{ lotus_user }}"
   become: true
   register: create_collateral_wallet
