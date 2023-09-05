@@ -14,6 +14,18 @@
   check_mode: true
   register: lotus_user_details
 
+- name: Ensure the Boost directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_group }}"
+    mode: '0750'
+  with_items:
+    - "{{ boost_client_repo }}"
+    - "{{ boost_bitswap_repo }}"
+    - "{{ boost_path }}"
+
 # Prerequisites
 - name: Install prerequisites
   include_tasks: 01-install_prerequisites.yml

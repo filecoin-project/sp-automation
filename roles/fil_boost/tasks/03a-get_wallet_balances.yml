@@ -1,0 +1,21 @@
+---
+- name: Check balances of wallets
+  ansible.builtin.shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet list"
+  register: wallet_list
+  become_user: "{{ lotus_user }}"
+  become: true
+  changed_when: false
+
+- name: Assert that wallet list is not empty
+  ansible.builtin.assert:
+    that:
+      - wallet_list.stdout != ""
+  changed_when: false
+
+- name: Get deals wallet balance
+  ansible.builtin.set_fact:
+    deals_wallet_balance: "{{ wallet_list.stdout_lines | select('search', deals_wallet_address) | first | regex_search('\\b([0-9]+\\.?[0-9]*)\\s+FIL\\b') | regex_replace(' FIL', '') }}"
+
+- name: Get collateral wallet balance
+  ansible.builtin.set_fact:
+    collateral_wallet_balance: "{{ wallet_list.stdout_lines | select('search', collateral_wallet_address) | first | regex_search('\\b([0-9]+\\.?[0-9]*)\\s+FIL\\b') | regex_replace(' FIL', '')  }}"

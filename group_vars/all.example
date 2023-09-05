@@ -21,6 +21,12 @@ smoketest: false
 nodejs_version: 18.x
 nodejs_install_npm_user: "{{ lotus_user }}"
 
+# Check which version of Lotus matches with which version of Boost and Go: https://boost.filecoin.io/getting-started
+# Then set them appropriately in your playbook or group_vars.
+lotus_version: "v1.23.3"
+golang_version: "1.20.7"
+boost_version: "v2.0.0"
+
 # Public (Lotus) IP address override. This is useful if you have multiple public IP addresses and want to bind Lotus to a specific one.
 # You can safely leave this unset if you only have one public IPV4 address or if it's the default public IP for your network.
 # If not set, we will attempt to automatically determine your public IP address using the service https://ifconfig.me.

@@ -1,16 +1,4 @@
 ---
-# create_boost_wallets ${INSTALL_DIR}
-# set_boost_vars
-# send_funds_to_boost
-# set_boost_control_wallet
-# install_node ${INSTALL_DIR} 
-# build_boost ${INSTALL_DIR}
-
-# check if the wallets exist already
-# check if we have less than four wallets
-# check if we have three wallets (in which case throw an error)
-# check if we have four wallets (in which case throw an error if we don't have the wallet addresses recorded)
-
 - name: List existing wallets
   ansible.builtin.shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet list"
   register: wallet_list
@@ -33,6 +21,8 @@
     that:
       - ansible_local.deals_wallet_address.wallet.address is defined
       - ansible_local.collateral_wallet_address.wallet.address is defined
+      - ansible_local.owner_wallet_address.wallet.address is defined
+      - ansible_local.worker_wallet_address.wallet.address is defined
   when:
     ansible_local.deals_wallet_address.wallet.address is defined or
     ansible_local.collateral_wallet_address.wallet.address is defined
@@ -41,6 +31,8 @@
   ansible.builtin.set_fact:
     deals_wallet_address: "{{ ansible_local.deals_wallet_address.wallet.address }}"
     collateral_wallet_address: "{{ ansible_local.collateral_wallet_address.wallet.address }}"
+    owner_wallet_address: "{{ ansible_local.owner_wallet_address.wallet.address }}"
+    worker_wallet_address: "{{ ansible_local.worker_wallet_address.wallet.address }}"
   when:
     ansible_local.deals_wallet_address.wallet.address is defined and
     ansible_local.collateral_wallet_address.wallet.address is defined
@@ -56,7 +48,7 @@
     that:
       - deals_wallet_address is defined
       - collateral_wallet_address is defined
-    fail_msg: "Your wallets appear to have been created outside of this automation. Please set deals_wallet_address and collateral_wallet_address facts and try again."
+    fail_msg: "Your wallets appear to have been created outside of this automation. Please set all wallet facts and try again."
   when: number_of_wallets | int > 3
 
 - name: If the deals wallet does not exist yet, create it.
