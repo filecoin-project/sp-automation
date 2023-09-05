@@ -7,6 +7,13 @@
 # install_node ${INSTALL_DIR} 
 # build_boost ${INSTALL_DIR}
 
+- name: Get and detect information about the Lotus user
+  ansible.builtin.user:
+    name: "{{ lotus_user }}"
+    state: present
+  check_mode: true
+  register: lotus_user_details
+
 # Prerequisites
 - name: Install prerequisites
   include_tasks: 01-install_prerequisites.yml

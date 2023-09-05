@@ -74,6 +74,22 @@
   changed_when: create_owner_wallet.rc == 0
   when: number_of_wallets == 0
 
+- name: If we created the owner wallet, set the owner_wallet_address fact permanently
+  ansible.builtin.template:
+    src: wallet.fact.j2
+    dest: "/etc/ansible/facts.d/owner_wallet_address.fact"
+    owner: root
+    group: root
+    mode: '0644'
+  vars:
+    wallet_fact_address: "{{ create_owner_wallet.stdout_lines[0] }}"
+  when: create_owner_wallet.rc == 0
+
+- name: If we created the owner wallet, set the owner_wallet_address fact temporarily
+  ansible.builtin.set_fact:
+    owner_wallet_address: "{{ create_owner_wallet.stdout_lines[0] }}"
+  when: create_owner_wallet.rc == 0
+
 - name: If the worker wallet does not exist yet, create it.
   ansible.builtin.shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet new bls"
   become_user: "{{ lotus_user }}"
@@ -83,6 +99,22 @@
   # This when conditional is a little silly, but it should work consistently. We always want to create this second wallet if we create the first one.
   when: number_of_wallets == 1 or number_of_wallets == 0
 
+- name: If we created the worker wallet, set the worker_wallet_address fact permanently
+  ansible.builtin.template:
+    src: wallet.fact.j2
+    dest: "/etc/ansible/facts.d/worker_wallet_address.fact"
+    owner: root
+    group: root
+    mode: '0644'
+  vars:
+    wallet_fact_address: "{{ create_worker_wallet.stdout_lines[0] }}"
+  when: create_worker_wallet.rc == 0
+
+- name: If we created the worker wallet, set the worker_wallet_address fact temporarily
+  ansible.builtin.set_fact:
+    worker_wallet_address: "{{ create_worker_wallet.stdout_lines[0] }}"
+  when: create_worker_wallet.rc == 0
+
 - name: List existing wallets again if we created any
   ansible.builtin.shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet list"
   register: wallet_list
@@ -90,12 +122,6 @@
   become: true
   changed_when: false
   # We use the same conditional here, as at this point in the run number_of_wallets hasn't technically changed.
-  when: number_of_wallets == 0 or number_of_wallets == 1
-
-- name: Set the addresses for the owner and worker wallets
-  ansible.builtin.set_fact:
-    owner_wallet_address: "{{ wallet_list.stdout_lines[1].split(' ')[0] }}"
-    worker_wallet_address: "{{ wallet_list.stdout_lines[2].split(' ')[0] }}"
   when: number_of_wallets == 0 or number_of_wallets == 1
 
 - name: Print owner and worker wallet addresses

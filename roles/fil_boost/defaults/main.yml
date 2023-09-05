@@ -9,3 +9,5 @@ boost_client_repo: "{{ lotus_user_details.home }}/.boost_client"
 boost_bitswap_repo: "{{ lotus_user_details.home }}/.boost_bitswap"
 boost_path: "{{ lotus_user_details.home }}/.boost"
 
+# Location for lotus' chain and data repository. The chain is stored under lotus_path. This requires fast storage (SSD or NVMe).
+lotus_path: "{{ lotus_user_details.home }}/.lotus{% if use_calibrationnet %}_calibnet{% endif %}"
