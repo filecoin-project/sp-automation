@@ -83,12 +83,12 @@
     mode: '0644'
   vars:
     wallet_fact_address: "{{ create_owner_wallet.stdout_lines[0] }}"
-  when: create_owner_wallet.rc == 0
+  when: (create_owner_wallet.rc | default(1) ) == 0
 
 - name: If we created the owner wallet, set the owner_wallet_address fact temporarily
   ansible.builtin.set_fact:
     owner_wallet_address: "{{ create_owner_wallet.stdout_lines[0] }}"
-  when: create_owner_wallet.rc == 0
+  when: (create_owner_wallet.rc | default(1) ) == 0
 
 - name: If the worker wallet does not exist yet, create it.
   ansible.builtin.shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet new bls"
@@ -108,12 +108,12 @@
     mode: '0644'
   vars:
     wallet_fact_address: "{{ create_worker_wallet.stdout_lines[0] }}"
-  when: create_worker_wallet.rc == 0
+  when: (create_worker_wallet.rc | default(1) ) == 0
 
 - name: If we created the worker wallet, set the worker_wallet_address fact temporarily
   ansible.builtin.set_fact:
     worker_wallet_address: "{{ create_worker_wallet.stdout_lines[0] }}"
-  when: create_worker_wallet.rc == 0
+  when: (create_worker_wallet.rc | default(1) ) == 0
 
 - name: List existing wallets again if we created any
   ansible.builtin.shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet list"
