@@ -45,7 +45,7 @@
       - ansible_local.owner_wallet_address.wallet.address is defined
       - ansible_local.worker_wallet_address.wallet.address is defined
   when:
-    ansible_local.owner_wallet_address.wallet.address is defined is defined or 
+    ansible_local.owner_wallet_address.wallet.address is defined or
     ansible_local.worker_wallet_address.wallet.address is defined
 
 - name: If the wallet list is empty, set number_of_wallets to zero

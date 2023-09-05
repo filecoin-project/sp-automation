@@ -47,7 +47,7 @@
   ansible.builtin.set_fact:
     deals_wallet_address: "{{ wallet_list.stdout_lines[1] | regex_replace(' +', ' ') | split(' ')[1] }}"
     collateral_wallet_address: "{{ wallet_list.stdout_lines[2] | regex_replace(' +', ' ') | split(' ')[1] }}"
-  when: number_of_wallets == 4
+  when: number_of_wallets > 3
 
 - name: If the collateral wallet does not exist yet, create it.
   ansible.builtin.shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet new bls"
