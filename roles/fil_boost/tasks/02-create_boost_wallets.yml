@@ -28,14 +28,6 @@
     number_of_wallets: "{{ wallet_list.stdout_lines[1:] | select('search', 'FIL') | list | length }}"
   when: wallet_list.stdout != ""
 
-- name: If the deals wallet does not exist yet, create it.
-  ansible.builtin.shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet new bls"
-  become_user: "{{ lotus_user }}"
-  become: true
-  register: create_deals_wallet
-  changed_when: create_deals_wallet.rc == 0
-  when: number_of_wallets == 2
-
 - name: If we have 3 wallets, something weird has happened, let the user know
   ansible.builtin.assert:
     that:
@@ -49,6 +41,14 @@
       - collateral_wallet_address is defined
     fail_msg: "Your wallets appear to have been created outside of this automation. Please set deals_wallet_address and collateral_wallet_address facts and try again."
   when: number_of_wallets > 3
+
+- name: If the deals wallet does not exist yet, create it.
+  ansible.builtin.shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet new bls"
+  become_user: "{{ lotus_user }}"
+  become: true
+  register: create_deals_wallet
+  changed_when: create_deals_wallet.rc == 0
+  when: number_of_wallets == 2
 
 - name: If the collateral wallet does not exist yet, create it.
   ansible.builtin.shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet new bls"
