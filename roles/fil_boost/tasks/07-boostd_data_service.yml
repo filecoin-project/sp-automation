@@ -1,0 +1,16 @@
+---
+- name: Create a config (flags) file for boostd-data
+  ansible.builtin.template:
+    src: boostd-data.conf.j2
+    dest: "{{ boost_config_path }}/boostd-data.conf"
+    owner: "{{ boost_user }}"
+    group: "{{ boost_group }}"
+    mode: '0640'
+
+- name: Install systemd unit file for boostd-data
+  ansible.builtin.template:
+    src: boostd-data.service.j2
+    dest: "/etc/systemd/system/boostd-data.service"
+    owner: "root"
+    group: "root"
+    mode: '0640'

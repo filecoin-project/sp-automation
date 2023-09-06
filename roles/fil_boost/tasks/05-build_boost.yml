@@ -5,7 +5,7 @@
     dest: "{{ build_dir }}/boost"
     version: "{{ boost_version }}"
   become: true
-  become_user: "{{ lotus_user }}"
+  become_user: "{{ boost_user }}"
 
 # TODO(feat): Detect version differences and rebuild Boost if necessary.
 # Partially implemented, needs further testing and refinement - W
@@ -17,7 +17,7 @@
   changed_when: false
   when: boost_version_installed is not defined
   become: true
-  become_user: "{{ lotus_user }}"
+  become_user: "{{ boost_user }}"
   ignore_errors: true
 
 - name: Parse version info from Boost version string
@@ -49,7 +49,7 @@
     chdir: "{{ build_dir }}/boost"
   when: boost_version_installed != boost_version | replace('v', '')
   become: true
-  become_user: "{{ lotus_user }}"
+  become_user: "{{ boost_user }}"
 
 - name: Build Boost
   ansible.builtin.shell:
@@ -59,7 +59,7 @@
     executable: /bin/bash
   register: build_boost
   become: true
-  become_user: "{{ lotus_user }}"
+  become_user: "{{ boost_user }}"
 
 - name: Install Boost
   ansible.builtin.make:

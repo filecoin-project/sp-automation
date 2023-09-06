@@ -1,0 +1,75 @@
+---
+- name: Check if we have YugabyteDB facts available
+  ansible.builtin.set_fact:
+    boost_yugabytedb_facts_available: true
+  when: ansible_local.boost_yugabytedb.database.username is defined
+  ignore_errors: true
+
+- name: If we have YugabyteDB facts available, assert that we have all needed facts
+  ansible.builtin.assert:
+    that:
+      - ansible_local.boost_yugabytedb.database.username is defined
+      - ansible_local.boost_yugabytedb.database.password is defined
+      - ansible_local.boost_yugabytedb.database.port is defined
+      - ansible_local.boost_yugabytedb.database.database is defined
+  when: boost_yugabytedb_facts_available is defined and boost_yugabytedb_facts_available
+
+- name: Load facts if available
+  ansible.builtin.set_fact:
+    boost_yugabytedb: "{{ ansible_local.boost_yugabytedb.database }}"
+  when: boost_yugabytedb_facts_available is defined and boost_yugabytedb_facts_available
+
+- name: Set host for PostgreSQL if not yet available as a fact
+  ansible.builtin.set_fact:
+    # We combine our existing boost_yugabytedb dictionary, in whatever form it exists in, with a new dictionary containing the host IP address of the first YugabyteDB TServer host in the inventory.
+    boost_yugabytedb: "{{ boost_yugabytedb | default({}) | combine({'host': hostvars[groups['yugabytedb_tserver'][0]]['ansible_' + yugabyte_bind_interface]['ipv4']['address']}, recursive=True) }}"
+  when: boost_yugabytedb.host is not defined
+
+- name: If we are generating facts for the first time, create a Boost password for YugabyteDB as well as other needed facts
+  ansible.builtin.set_fact:
+    boost_yugabytedb:
+      password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+      username: "boost"
+      database: "boostdb"
+      port: 5433
+  when: boost_yugabytedb.password is not defined
+
+- name: Store our Boost YugabyteDB facts
+  ansible.builtin.template:
+    src: boost_yugabytedb.fact.j2
+    dest: "/etc/ansible/facts.d/boost_yugabytedb.fact"
+    owner: root
+    group: root
+    mode: '0400'
+  when: boost_yugabytedb.password is defined
+
+- name: Create YugabyteDB user using the PostgreSQL compat layer
+  community.postgresql.postgresql_user:
+    login_host: "{{ boost_yugabytedb.host }}"
+    login_password: "{{ boost_yugabytedb_superuser.password }}"
+    login_user: "{{ boost_yugabytedb_superuser.username }}"
+    name: "{{ boost_yugabytedb.username }}"
+    password: "{{ boost_yugabytedb.password }}"
+    port: "{{ boost_yugabytedb.port }}"
+    encrypted: true
+
+- name: Create YugabyteDB database
+  community.postgresql.postgresql_db:
+    login_host: "{{ boost_yugabytedb.host }}"
+    login_password: "{{ boost_yugabytedb_superuser.password }}"
+    login_user: "{{ boost_yugabytedb_superuser.username }}"
+    owner: "{{ boost_yugabytedb.username }}"
+    name: "{{ boost_yugabytedb.database }}"
+    port: "{{ boost_yugabytedb.port }}"
+
+- name: Grant YugabyteDB user access to YugabyteDB database
+  community.postgresql.postgresql_privs:
+    login_host: "{{ boost_yugabytedb.host }}"
+    login_password: "{{ boost_yugabytedb_superuser.password }}"
+    login_user: "{{ boost_yugabytedb_superuser.username }}"
+    port: "{{ boost_yugabytedb.port }}"
+    database: "{{ boost_yugabytedb.database }}"
+    roles: "{{ boost_yugabytedb.username }}"
+    grant_option: true
+    type: database
+    privs: ALL

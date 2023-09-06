@@ -1,4 +1,9 @@
 ---
+- name: Gather facts from all hosts
+  hosts: all
+  gather_facts: true
+  become: true
+
 - name: Debug playbook
   hosts: boost
   become: true

@@ -28,3 +28,15 @@
       - wget
       - aria2
     state: present
+
+- name: Install system packages useful for managing via Ansible
+  ansible.builtin.package:
+    name:
+      - acl
+      - python3-pip
+
+- name: Install Python3 packages useful for managing via Ansible
+  ansible.builtin.pip:
+    name: psycopg2-binary
+    state: present
+    executable: /usr/bin/pip3

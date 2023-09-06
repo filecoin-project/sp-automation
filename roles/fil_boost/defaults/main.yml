@@ -1,5 +1,7 @@
 ---
 # defaults file for fil_boost
+boost_user: "boost"
+boost_group: "boost"
 
 # Skip wallet creation, chain sync and import and similar tasks. Just test building the software.
 smoketest: false
@@ -17,6 +19,8 @@ boost_version: "v2.0.0"
 boost_client_repo: "{{ lotus_user_details.home }}/.boost_client"
 boost_bitswap_repo: "{{ lotus_user_details.home }}/.boost_bitswap"
 boost_path: "{{ lotus_user_details.home }}/.boost"
+boost_config_path: "/etc/boost"
+boost_log_dir: "/var/log/boost"
 
 # Location for lotus miner's data repository.
 lotus_miner_path: "{{ lotus_user_details.home }}/.lotusminer{% if use_calibrationnet %}_calibnet{% endif %}"

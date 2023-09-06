@@ -1,0 +1,20 @@
+[Unit]
+Description=Boostd Data service
+After=network-online.target
+Wants=network-online.target systemd-networkd-wait-online.service
+
+[Service]
+User={{ boost_user }}
+Group={{ boost_group }}
+Restart=on-failure
+RestartSec=3s
+EnvironmentFile=/etc/boost/boostd-data.conf
+ExecStart=/usr/local/bin/boostd-data run yugabyte \
+    --hosts ${YUGABYTE_HOSTS} \
+    --connect-string=${YUGABYTE_CONNECT_STRING} \
+    --addr ${BIND_ADDR}
+StandardOutput=append:{{ boost_log_dir }}/boostd-data.log
+StandardError=append:{{ boost_log_dir }}/boostd-data.log
+
+[Install]
+WantedBy=multi-user.target
