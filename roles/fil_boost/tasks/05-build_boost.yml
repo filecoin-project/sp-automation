@@ -30,7 +30,7 @@
 
 - name: Build Boost
   ansible.builtin.shell:
-    cmd: "source /etc/profile.d/golang.sh ; source {{ lotus_user_details.home }}/.cargo/env ; make -j{{ ansible_processor_vcpus }} clean {% if not use_calibrationnet %}build{% else %}calibnet{% endif %}"
+    cmd: "source /etc/profile.d/golang.sh ; source {{ lotus_user_details.home }}/.cargo/env ; make clean {% if not use_calibrationnet %}build{% else %}calibnet{% endif %}"
     chdir: "{{ build_dir }}/boost"
     executable: /bin/bash
   register: build_boost
