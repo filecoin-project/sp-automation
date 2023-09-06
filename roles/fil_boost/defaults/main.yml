@@ -16,9 +16,9 @@ golang_version: "1.20.7"
 boost_version: "v2.0.0"
 
 # Locations for Boost directories
-boost_client_repo: "{{ lotus_user_details.home }}/.boost_client"
-boost_bitswap_repo: "{{ lotus_user_details.home }}/.boost_bitswap"
-boost_path: "{{ lotus_user_details.home }}/.boost"
+boost_client_repo: "{{ boost_user_details.home }}/.boost_client"
+boost_bitswap_repo: "{{ boost_user_details.home }}/.boost_bitswap"
+boost_path: "{{ boost_user_details.home }}/.boost"
 boost_config_path: "/etc/boost"
 boost_log_dir: "/var/log/boost"
 
@@ -29,7 +29,7 @@ lotus_miner_path: "{{ lotus_user_details.home }}/.lotusminer{% if use_calibratio
 lotus_path: "{{ lotus_user_details.home }}/.lotus{% if use_calibrationnet %}_calibnet{% endif %}"
 
 # Build directory for building software.
-build_dir: "{{ lotus_user_details.home }}/src/"
+boost_build_dir: "{{ boost_user_details.home }}/src/"
 
 # Minimum amount of FIL for a Boost wallet to be considered funded. This is used to determine if a wallet is ready to be used for Boost.
 # !! Please note - this will also be used as the amount of FIL to transfer to the Boost wallets if they are not funded.

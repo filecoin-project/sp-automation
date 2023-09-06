@@ -2,7 +2,7 @@
 - name: Check out Boost
   ansible.builtin.git:
     repo: "{{ boost_git_repo }}"
-    dest: "{{ build_dir }}/boost"
+    dest: "{{ boost_build_dir }}/boost"
     version: "{{ boost_version }}"
   become: true
   become_user: "{{ boost_user }}"
@@ -26,11 +26,6 @@
   ignore_errors: true
   when: boost_version_output.stdout is defined and boost_version_output.stdout != ""
 
-- name: Print our detected Boost version string
-  debug:
-    msg: "Detected Boost version: {{ boost_version_installed }}"
-  when: boost_version_installed is defined
-
 - name: If we got a Boost version, let's validate that it conforms to Semantic Versioning V2 format
   assert:
     that:
@@ -46,7 +41,7 @@
 - name: Check if the Boost version matches the version we want to install, and if it does not, remove all Boost build files
   ansible.builtin.command:
     cmd: "make clean"
-    chdir: "{{ build_dir }}/boost"
+    chdir: "{{ boost_build_dir }}/boost"
   when: boost_version_installed != boost_version | replace('v', '')
   become: true
   become_user: "{{ boost_user }}"
@@ -54,8 +49,8 @@
 - name: Build Boost
   ansible.builtin.shell:
     cmd: "source /etc/profile.d/golang.sh ; source {{ lotus_user_details.home }}/.cargo/env ; make clean {% if not use_calibrationnet %}build{% else %}calibnet{% endif %}"
-    chdir: "{{ build_dir }}/boost"
-    creates: "{{ build_dir }}/boost/boostd"
+    chdir: "{{ boost_build_dir }}/boost"
+    creates: "{{ boost_build_dir }}/boost/boostd"
     executable: /bin/bash
   register: build_boost
   become: true
@@ -63,7 +58,7 @@
 
 - name: Install Boost
   ansible.builtin.make:
-    chdir: "{{ build_dir }}/boost"
+    chdir: "{{ boost_build_dir }}/boost"
     target: install
   become: true
   when: build_boost.changed

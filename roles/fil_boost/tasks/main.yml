@@ -26,7 +26,7 @@
 
 - name: Get and detect information about the Lotus user
   ansible.builtin.user:
-    name: "{{ boost_user }}"
+    name: "{{ lotus_user }}"
     state: present
   check_mode: true
   register: lotus_user_details
@@ -45,27 +45,34 @@
     - "{{ boost_config_path }}"
     - "{{ boost_log_dir }}"
 
-# # Prerequisites
-# - name: Install prerequisites
-#   include_tasks: 01-install_prerequisites.yml
+# Prerequisites
+- name: Install prerequisites
+  include_tasks: 01-install_prerequisites.yml
 
-# - name: Create Boost wallets
-#   include_tasks: 02-create_boost_wallets.yml
-#   when: not smoketest
+- name: Create Boost wallets
+  include_tasks: 02-create_boost_wallets.yml
+  when: not smoketest
 
-# - name: Send funds to Boost
-#   include_tasks: 03-send_funds_to_boost.yml
-#   when: not smoketest
+- name: Send funds to Boost
+  include_tasks: 03-send_funds_to_boost.yml
+  when: not smoketest
 
-# - name: Set Boost control wallet
-#   include_tasks: 04-set_boost_control_wallet.yml
-#   when: not smoketest
+- name: Set Boost control wallet
+  include_tasks: 04-set_boost_control_wallet.yml
+  when: not smoketest
 
-# - name: Build Boost
-#   include_tasks: 05-build_boost.yml
+- name: Build Boost
+  include_tasks: 05-build_boost.yml
 
 - name: Create YugabyteDB user and database
   include_tasks: 06-create_yugabyte_user.yml
 
 - name: Create configuration and service for boostd-data service
   include_tasks: 07-boostd_data_service.yml
+
+- name: Initialise Boost repository
+  include_tasks: 08-initialise_boost_repository.yml
+
+- name: Set limits
+  include_tasks: 09-set_limits.yml
+  

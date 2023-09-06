@@ -1,3 +1,6 @@
 ---
 # Configuration for YugabyteDB nodes
 yugabyte_bind_interface: enp6s18
+
+# Set maximum staging bytes for Boost
+max_staging_bytes: 50000000000
