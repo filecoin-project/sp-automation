@@ -32,6 +32,7 @@
   ansible.builtin.shell:
     cmd: "source /etc/profile.d/golang.sh ; source {{ lotus_user_details.home }}/.cargo/env ; make clean {% if not use_calibrationnet %}build{% else %}calibnet{% endif %}"
     chdir: "{{ build_dir }}/boost"
+    creates: "{{ build_dir }}/boost/boostd"
     executable: /bin/bash
   register: build_boost
   become: true
