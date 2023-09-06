@@ -1,4 +1,5 @@
 ---
 collections:
   - name: community.general
+  - name: community.postgresql
   - name: ansible.posix

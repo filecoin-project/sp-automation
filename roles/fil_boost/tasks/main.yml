@@ -44,3 +44,6 @@
 
 - name: Build Boost
   include_tasks: 05-build_boost.yml
+
+- name: Create YugabyteDB user and database
+  include_tasks: 06-create_yugabyte_user.yml
