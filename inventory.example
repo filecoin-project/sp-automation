@@ -1,6 +1,9 @@
 [lotus_primary]
 localhost
 
+[lotus_miner]
+localhost
+
 [boost]
 localhost
 
