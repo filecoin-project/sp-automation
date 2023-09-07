@@ -75,4 +75,6 @@
 
 - name: Set limits
   include_tasks: 09-set_limits.yml
-  
+
+- name: Configure Boost LibP2P options
+  include_tasks: 10-configure_boost_libp2p.yml
