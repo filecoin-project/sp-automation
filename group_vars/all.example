@@ -17,6 +17,10 @@ boost_bind_interface: enp6s18
 #lotus_path: "/opt/.lotus"
 #lotus_miner_path: "/opt/.lotusminer"
 
+# Location for boost.
+# Defaults to ~/.boost (with "_calibnet" appended if use_calibrationnet is true).
+#boost_path: "/opt/.boost"
+
 # Location for the Lotus log file(s)
 log_dir: "/var/log/lotus"
 

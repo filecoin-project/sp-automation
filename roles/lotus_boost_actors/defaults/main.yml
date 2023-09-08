@@ -1,3 +1,10 @@
 ---
 # defaults file for lotus_boost_actors
-# Nothing required yet
+
+# Paths for various parts of the stack.
+lotus_path: "{{ lotus_user_details.home }}/.lotus{% if use_calibrationnet %}_calibnet{% endif %}"
+lotus_miner_path: "{{ lotus_user_details.home }}/.lotusminer{% if use_calibrationnet %}_calibnet{% endif %}"
+boost_path: "{{ boost_user_details.home}}/.boost"
+
+lotus_user: "lotus"
+boost_user: "boost"

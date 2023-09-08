@@ -1,4 +1,11 @@
 ---
 # tasks file for lotus_boost_actors
+- name: Get and detect information about the Lotus user
+  ansible.builtin.user:
+    name: "{{ lotus_user }}"
+    state: present
+  check_mode: true
+  register: lotus_user_details
+
 - name: Set actors 
   include_tasks: 01-set_actors.yml
