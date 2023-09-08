@@ -1,0 +1,60 @@
+---
+- name: Check if we need to set the multiaddr onchain
+  ansible.builtin.stat:
+    path: "{{ lotus_miner_path }}/boost_multiaddr_set"
+  register: set_multiaddr_file
+
+- name: Check if we need to set the peer ID onchain
+  ansible.builtin.stat:
+    path: "{{ lotus_miner_path }}/boost_peer_id_set"
+  register: set_peer_id_file
+
+- name: Set multiaddr onchain
+  ansible.builtin.shell:
+    cmd: "lotus-miner actor set-addrs /ip4/{{ boost_public_ip }}/tcp/{{ boost_libp2p_port }}"
+  environment:
+    LOTUS_MINER_PATH: "{{ lotus_miner_path }}"
+  register: set_multiaddr_result
+  become: true
+  become_user: "{{ lotus_user }}"
+  when: not ( set_multiaddr_file.stat.exists | default(false) )
+
+- name: If we failed to set the multiaddr onchain, fail
+  ansible.builtin.assert:
+    that:
+      - ( set_multiaddr_result.rc | default(1) ) == 0
+  when: not ( set_multiaddr_file.stat.exists | default(false) )
+
+- name: If we successfully set the multiaddr onchain, write the multiaddr to a file
+  ansible.builtin.copy:
+    content: "/ip4/{{ boost_public_ip }}/tcp/{{ boost_libp2p_port }}"
+    dest: "{{ lotus_miner_path }}/boost_multiaddr_set"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: 0600
+  when: not ( set_multiaddr_file.stat.exists | default(false) ) and ( set_multiaddr_result.rc | default(1) ) == 0
+
+- name: Set peer ID onchain
+  ansible.builtin.shell:
+    cmd: "lotus-miner actor set-peer-id {{ boost_peer_id }}"
+  environment:
+    LOTUS_MINER_PATH: "{{ lotus_miner_path }}"
+  register: set_peer_id_result
+  become: true
+  become_user: "{{ lotus_user }}"
+  when: not ( set_peer_id_file.stat.exists | default(false) )
+
+- name: If we failed to set the peer id onchain, fail
+  ansible.builtin.assert:
+    that:
+      - ( set_peer_id_result.rc | default(1) ) == 0
+  when: not ( set_peer_id_file.stat.exists | default(false) )
+
+- name: If we successfully set the peer id onchain, write the peer id to a file
+  ansible.builtin.copy:
+    content: "/ip4/{{ boost_public_ip }}/tcp/{{ boost_libp2p_port }}"
+    dest: "{{ lotus_miner_path }}/boost_peer_id_set"
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: 0600
+  when: not ( set_peer_id_file.stat.exists | default(false) ) and ( set_peer_id_result.rc | default(1) ) == 0

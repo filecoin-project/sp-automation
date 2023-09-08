@@ -1,0 +1,4 @@
+---
+# tasks file for lotus_boost_actors
+- name: Set actors 
+  include_tasks: 01-set_actors.yml

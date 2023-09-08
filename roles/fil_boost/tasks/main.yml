@@ -82,5 +82,5 @@
 - name: Configure and start boostd main service
   include_tasks: 11-boostd_main_service.yml
 
-- name: Set actors if necessary
-  include_tasks: 12-set_actors.yml
+# - name: Print success messages!
+#   include_tasks: 12-final_preflight.yml

@@ -3,43 +3,63 @@
   hosts: lotus_primary
   become: true
 
-  pre_tasks:
-    - name: Update apt cache
-      ansible.builtin.apt:
-        update_cache: true
+  roles:
+    - zorlin.lotus_daemon
 
-    - name: Ensure all packages are up to date
-      ansible.builtin.apt:
-        upgrade: dist
-
-    - name: Create Lotus system group
-      ansible.builtin.group:
-        name: "{{ lotus_group }}"
-        system: true
-        state: present
-
-    - name: Create Lotus system user
-      ansible.builtin.user:
-        name: "{{ lotus_user }}"
-        comment: "Lotus Daemon User"
-        shell: /bin/bash
-        system: true
-        createhome: true
-        group: "{{ lotus_group }}"
-        groups: "sudo,adm"
-        append: true
-
-    - name: Create Lotus log directory
-      ansible.builtin.file:
-        path: "{{ log_dir }}"
-        state: directory
-        owner: "{{ lotus_user }}"
-        group: "{{ lotus_group }}"
-        mode: 0750
+- name: Deploy Lotus Miner
+  hosts: lotus_miner
+  become: true
 
   roles:
-    # We use a slightly modified role for the nvidia driver because the default one fails when installing in CUDA mode with newer drivers.
-    - { role: zorlin.nvidia_driver, when: install_nvidia_driver | bool }
-    - zorlin.lotus_daemon
     - zorlin.lotus_miner
+
+- name: Deploy Boost
+  hosts: boost
+  become: true
+
+  roles:
     - zorlin.fil_boost
+
+- name: Collect Boost information necessary for next stages
+  hosts: boost
+  become: true
+
+  tasks:
+    - name: Get public IPv4 address using ifconfig.me
+      ansible.builtin.uri:
+        url: https://ifconfig.me
+        return_content: yes
+        status_code: 200
+        validate_certs: false
+        http_agent: curl
+      register: boost_get_public_ip
+      until: boost_get_public_ip.status == 200
+      retries: 3
+      delay: 3
+      check_mode: false
+      when: boost_public_ip is not defined
+
+    - name: If we now have a public IPv4 address, set it as boost_public_ip for later use
+      ansible.builtin.set_fact:
+        boost_public_ip: "{{ boost_get_public_ip.content }}"
+      when: boost_public_ip is not defined and boost_get_public_ip.status == 200
+
+    - name: Fetch Boost peer ID
+      ansible.builtin.command:
+        cmd: "/usr/local/bin/boostd net id"
+      register: boost_get_peer_id
+      check_mode: false
+      when: boost_peer_id is not defined
+      become_user: "{{ boost_user }}"
+
+    - name: If we now have a Boost peer ID, set it as boost_peer_id for later use
+      ansible.builtin.set_fact:
+        boost_per_id: "{{ boost_get_peer_id.stdout }}"
+      when: boost_public_ip is not defined and boost_get_public_ip.status == 200
+
+- name: Set Lotus actors for Boost
+  hosts: lotus_miner
+  become: true
+
+  roles:
+    - zorlin.lotus_boost_actors
