@@ -5,6 +5,7 @@
   become_user: "{{ lotus_user }}"
   become: true
   changed_when: false
+  check_mode: false
 
 - name: Assert that wallet list is not empty
   ansible.builtin.assert:
