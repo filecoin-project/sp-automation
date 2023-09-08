@@ -3,6 +3,9 @@
 lotus_user: lotus
 lotus_group: lotus
 
+# Boost user and group name
+boost_user: boost
+
 # Network interface you would like each daemon to listen on.
 lotusd_bind_interface: enp6s18
 lotus_miner_bind_interface: enp6s18
