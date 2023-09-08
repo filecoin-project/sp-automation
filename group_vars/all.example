@@ -7,6 +7,7 @@ lotus_group: lotus
 lotusd_bind_interface: enp6s18
 lotus_miner_bind_interface: enp6s18
 yugabyte_bind_interface: enp6s18
+boost_bind_interface: enp6s18
 
 # Location for lotus and lotus-miner. The chain is stored under lotus_path. This requires fast storage (SSD or NVMe).
 # Defaults to ~/.lotus, ~/.lotusminer respectively (with "_calibnet" appended if use_calibrationnet is true).
@@ -37,6 +38,11 @@ boost_version: "v2.0.0"
 # If not set, we will attempt to automatically determine your public IP address using the service https://ifconfig.me.
 #lotus_public_ip: 101.234.123.234
 
+# Public (Boost) IP address override. This is useful if you have multiple public IP addresses and want to bind Boost to a specific one.
+# You can safely leave this unset if you only have one public IPV4 address or if it's the default public IP for your network.
+# If not set, we will attempt to automatically determine your public IP address using the service https://ifconfig.me.
+#boost_public_ip: 101.234.123.235
+
 # Private (miner API) IP address override. This is useful if you have multiple private IP addresses and want to bind Lotus to a specific one.
 # This setting is MANDATORY if your Lotus miner node's private IP address is different from the default IP detected by Ansible -
 # which is likely to be the case if your miner is running in the cloud or has a semi-exotic networking setup.
@@ -50,6 +56,9 @@ lotus_libp2p_port: 6665
 
 # Port for Lotus Miner to run on
 lotus_miner_port: 2345
+
+# Ports for Boost to run on
+boost_libp2p_port: 24001
 
 # Set a custom IPFS gateway to use for miner parameter download.
 # Must be the protocol and domain of the IPFS gateway, without anything after it. For example: "http://ipfs.io"

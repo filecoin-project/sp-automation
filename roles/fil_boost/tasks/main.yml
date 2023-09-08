@@ -67,7 +67,7 @@
 - name: Create YugabyteDB user and database
   include_tasks: 06-create_yugabyte_user.yml
 
-- name: Create configuration and service for boostd-data service
+- name: Configure and start boostd-data service
   include_tasks: 07-boostd_data_service.yml
 
 - name: Initialise Boost repository
@@ -76,5 +76,11 @@
 - name: Set limits
   include_tasks: 09-set_limits.yml
 
-- name: Configure Boost LibP2P options
-  include_tasks: 10-configure_boost_libp2p.yml
+- name: Configure Boost LibP2P and networking options
+  include_tasks: 10-configure_boost_networking.yml
+
+- name: Configure and start boostd main service
+  include_tasks: 11-boostd_main_service.yml
+
+- name: Set actors if necessary
+  include_tasks: 12-set_actors.yml

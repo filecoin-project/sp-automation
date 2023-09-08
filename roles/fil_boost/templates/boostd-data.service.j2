@@ -8,7 +8,7 @@ User={{ boost_user }}
 Group={{ boost_group }}
 Restart=on-failure
 RestartSec=3s
-EnvironmentFile=/etc/boost/boostd-data.conf
+EnvironmentFile={{ boost_config_path }}/boostd-data.conf
 ExecStart=/usr/local/bin/boostd-data run yugabyte \
     --hosts ${YUGABYTE_HOSTS} \
     --connect-string=${YUGABYTE_CONNECT_STRING} \

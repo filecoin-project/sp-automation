@@ -6,6 +6,7 @@
     owner: "{{ boost_user }}"
     group: "{{ boost_group }}"
     mode: '0640'
+  notify: Restart boostd-data
 
 - name: Install systemd unit file for boostd-data
   ansible.builtin.template:
@@ -14,3 +15,15 @@
     owner: "root"
     group: "root"
     mode: '0640'
+  notify: Reload systemd
+
+# Flush handlers
+- name: Flush handlers to reload systemd if necessary
+  meta: flush_handlers
+
+- name: Ensure the boostd-data service is started
+  ansible.builtin.service:
+    name: boostd-data
+    state: started
+    enabled: true
+  notify: Restart boostd-data

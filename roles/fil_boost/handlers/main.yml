@@ -1,2 +1,17 @@
 ---
 # handlers file for fil_boost
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Restart boostd-data
+  ansible.builtin.systemd:
+    name: boostd-data
+    state: restarted
+    enabled: true
+
+- name: Restart boostd
+  ansible.builtin.systemd:
+    name: boostd
+    state: restarted
+    enabled: true

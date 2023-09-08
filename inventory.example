@@ -7,6 +7,9 @@ localhost
 [boost]
 localhost
 
+[boost_data]
+localhost
+
 [yugabytedb]
 localhost
 

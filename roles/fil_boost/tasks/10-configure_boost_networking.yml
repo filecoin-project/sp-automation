@@ -1,0 +1,54 @@
+---
+# TODO(bug): This does not gracefully handle a dual stack machine. In this case, it may respond with an IPv6 address instead of IPv4.
+# A future fix will be to shell out to `curl -4 https://ifconfig.me` instead.
+- name: Get public IPv4 address using ifconfig.me
+  ansible.builtin.uri:
+    url: https://ifconfig.me
+    return_content: yes
+    status_code: 200
+    validate_certs: false
+    http_agent: curl
+  register: boost_get_public_ip
+  until: boost_get_public_ip.status == 200
+  retries: 3
+  delay: 3
+  check_mode: false
+  when: boost_public_ip is not defined
+
+- name: If we now have a public IPv4 address, use it
+  ansible.builtin.set_fact:
+    boost_public_ip: "{{ boost_get_public_ip.content }}"
+  when: boost_public_ip is not defined and boost_get_public_ip.status == 200
+
+- name: Get Boost IPv4 address using inventory introspection
+  ansible.builtin.set_fact:
+    boost_ipv4_address: "{{ hostvars[groups['boost'][0]]['ansible_' + boost_bind_interface]['ipv4']['address'] }}"
+
+- name: Get Boost Data IPv4 address using inventory introspection
+  ansible.builtin.set_fact:
+    boost_data_ipv4_address: "{{ hostvars[groups['boost_data'][0]]['ansible_' + boost_bind_interface]['ipv4']['address'] }}"
+
+- name: Update Boost libp2p ListenAddresses
+  ansible.builtin.replace:
+    path: "{{ boost_path }}/config.toml"
+    regexp: '\s\sListenAddresses\s=\s(.*)$'
+    replace: '  ListenAddresses = ["/ip4/{{ boost_ipv4_address }}/tcp/{{ boost_libp2p_port }}"]'
+    after: '\[Libp2p\]'
+    before: '\[Pubsub\]'
+
+- name: Update Boost libp2p AnnounceAddresses
+  ansible.builtin.replace:
+    path: "{{ boost_path }}/config.toml"
+    regexp: '\s\sAnnounceAddresses(.*)$'
+    replace: '  AnnounceAddresses = ["/ip4/{{ boost_public_ip }}/tcp/{{ boost_libp2p_port }}"]'
+    after: '\[Libp2p\]'
+    before: '\[Pubsub\]'
+
+# TODO(bug) - Not necessarily a bug, but just for documentation purposes -
+# We replace the entire configuration section for [LocalIndexDirectory]
+# per this discussion - https://filecoinproject.slack.com/archives/C03CKDLEWG1/p1694010062617519?thread_ts=1694001906.557649&cid=C03CKDLEWG1
+- name: Update Boost ServiceApiInfo
+  ansible.builtin.replace:
+    path: "{{ boost_path }}/config.toml"
+    regexp: '(?<=\[LocalIndexDirectory\])(.*\n)+?(?=\[ContractDeals\])'
+    replace: '\n  ServiceApiInfo = "ws://{{ boost_data_ipv4_address }}:8044"\n\n'
