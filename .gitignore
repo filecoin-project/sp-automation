@@ -2,5 +2,6 @@
 **/secret.yml
 group_vars/all
 group_vars/yugabytedb
+group_vars/boost
 host_vars/*
 inventory

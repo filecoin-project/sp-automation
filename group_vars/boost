@@ -1,3 +1,0 @@
----
-# Set maximum staging bytes for Boost
-max_staging_bytes: 50000000000
