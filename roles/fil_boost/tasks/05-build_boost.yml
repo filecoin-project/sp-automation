@@ -19,6 +19,7 @@
   become: true
   become_user: "{{ boost_user }}"
   ignore_errors: true
+  check_mode: false
 
 - name: Parse version info from Boost version string
   ansible.builtin.set_fact:
