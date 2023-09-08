@@ -44,11 +44,10 @@
     after: '\[Libp2p\]'
     before: '\[Pubsub\]'
 
-# TODO(bug) - Not necessarily a bug, but just for documentation purposes -
-# We replace the entire configuration section for [LocalIndexDirectory]
-# per this discussion - https://filecoinproject.slack.com/archives/C03CKDLEWG1/p1694010062617519?thread_ts=1694001906.557649&cid=C03CKDLEWG1
 - name: Update Boost ServiceApiInfo
   ansible.builtin.replace:
     path: "{{ boost_path }}/config.toml"
-    regexp: '(?<=\[LocalIndexDirectory\])(.*\n)+?(?=\[ContractDeals\])'
-    replace: '\n  ServiceApiInfo = "ws://{{ boost_data_ipv4_address }}:8044"\n\n'
+    regexp: '\s\sServiceApiInfo(.*)$'
+    replace: '  ServiceApiInfo = "ws://{{ boost_data_ipv4_address }}:8044"'
+    after: '\[LocalIndexDirectory\]'
+    before: '\[ContractDeals\]'
