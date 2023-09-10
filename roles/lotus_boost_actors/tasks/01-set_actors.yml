@@ -10,10 +10,11 @@
   register: set_peer_id_file
 
 - name: Set multiaddr onchain
-  ansible.builtin.shell:
+  ansible.builtin.command:
     cmd: "lotus-miner actor set-addrs /ip4/{{ boost_public_ip }}/tcp/{{ boost_libp2p_port }}"
   environment:
     LOTUS_MINER_PATH: "{{ lotus_miner_path }}"
+    FULLNODE_API_INFO: "{{ lotus_auth_token.stdout }}:/ip4/{{ hostvars[groups['lotus_primary'][0]]['ansible_' + lotusd_bind_interface]['ipv4']['address'] }}/tcp/{{ lotus_daemon_port }}"
   register: set_multiaddr_result
   become: true
   become_user: "{{ lotus_user }}"
@@ -36,7 +37,7 @@
 
 - name: Set peer ID onchain
   ansible.builtin.shell:
-    cmd: "lotus-miner actor set-peer-id {{ boost_peer_id }}"
+    cmd: "lotus-miner actor set-peer-id {{ hostvars[groups['boost'][0]]['boost_peer_id' }}"
   environment:
     LOTUS_MINER_PATH: "{{ lotus_miner_path }}"
   register: set_peer_id_result

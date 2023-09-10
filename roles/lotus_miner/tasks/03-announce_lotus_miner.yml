@@ -18,6 +18,20 @@
   ansible.builtin.set_fact:
     miner_api_info: "{{ lotus_miner_api_token }}:/ip4/{{ lotus_miner_ip }}/tcp/{{ lotus_miner_port }}/http"
 
+- name: Set miner_api_info in .bashrc
+  ansible.builtin.lineinfile:
+    path: "{{ lotus_user_details.home }}/.bashrc"
+    line: "export MINER_API_INFO=$(cat {{ lotus_miner_api_token_file }}):/ip4/{{ lotus_miner_ip }}/tcp/{{ lotus_miner_port }}/http"
+    state: present
+    create: true
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: 0644
+    # TODO(decision) We probably want MINER_API_INFO to only be available to interactive shells.
+    # If we change our mind on that later, uncomment the following line.
+    #insertbefore: "# If not running interactively, don't do anything"
+  when: lotus_miner_api_token is defined
+
 - name: Check that we successfully read the Lotus Miner API token.
   ansible.builtin.assert:
     that:
