@@ -1,6 +1,7 @@
+{% set remote_listen_address = ansible[lotus_miner_bind_interface].ipv4.address %}
 [API]
   ListenAddress = "/ip4/0.0.0.0/tcp/{{ lotus_miner_port }}/http"
-  RemoteListenAddress = "${IP}:{{ lotus_miner_port }}"
+  RemoteListenAddress = "{{ remote_listen_address }}:{{ lotus_miner_port }}"
   Timeout = "30s"
 
 [Storage]
