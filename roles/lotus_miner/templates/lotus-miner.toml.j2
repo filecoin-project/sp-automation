@@ -1,17 +1,17 @@
-{% set remote_listen_address = ansible[lotus_miner_bind_interface].ipv4.address %}
+{% set remote_listen_address = hostvars[inventory_hostname]['ansible_' + lotus_miner_bind_interface]['ipv4']['address'] %}
 [API]
   ListenAddress = "/ip4/0.0.0.0/tcp/{{ lotus_miner_port }}/http"
   RemoteListenAddress = "{{ remote_listen_address }}:{{ lotus_miner_port }}"
   Timeout = "30s"
 
 [Storage]
-  AllowAddPiece = false
-  AllowPreCommit1 = false
-  AllowPreCommit2 = false
-  AllowCommit = false
-  AllowUnseal = false
-  AllowReplicaUpdate = false
-  AllowProveReplicaUpdate2 = false
+  AllowAddPiece = {{ "true" if debug_sealing_on_miner else "false" }}
+  AllowPreCommit1 = {{ "true" if debug_sealing_on_miner else "false" }}
+  AllowPreCommit2 = {{ "true" if debug_sealing_on_miner else "false" }}
+  AllowCommit = {{ "true" if debug_sealing_on_miner else "false" }}
+  AllowUnseal = {{ "true" if debug_sealing_on_miner else "false" }}
+  AllowReplicaUpdate = {{ "true" if debug_sealing_on_miner else "false" }}
+  AllowProveReplicaUpdate2 = {{ "true" if debug_sealing_on_miner else "false" }}
 
 [Sealing]
   CollateralFromMinerBalance = true
