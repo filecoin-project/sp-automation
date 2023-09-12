@@ -3,12 +3,12 @@
   ansible.builtin.pause:
     prompt: "Enter a list of storage paths for sealed sectors, separated by commas (e.g. /mnt/storage1,/mnt/storage2): "
   register: new_lotus_miner_storage_paths
-  when: lotus_miner_storage_paths is not defined
+  when: lotus_miner_storage_paths is not defined and (lotus_miner_has_storage is not defined or not lotus_miner_has_storage)
 
 - name: Exit if user did not enter any storage paths or entered invalid paths
   ansible.builtin.fail:
     msg: "You must enter a list of storage paths for sealed sectors."
-  when: new_lotus_miner_storage_paths.user_input | length == 0
+  when: new_lotus_miner_storage_paths.user_input | length == 0 and (lotus_miner_has_storage is not defined or not lotus_miner_has_storage)
 
 - name: Convert storage paths to a list
   ansible.builtin.set_fact:

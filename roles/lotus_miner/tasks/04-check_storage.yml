@@ -12,3 +12,13 @@
   become: true
   changed_when: false
   failed_when: false
+
+- name: Convert output of Lotus Miner storage paths into a list of UUIDs
+  set_fact:
+    lotus_miner_storage_uuids: "{{ storage_list|default([]) + [item.split(':')[0]] }}"
+    lotus_miner_has_storage: true
+  loop: "{{ lotus_miner_storage_list.stdout_lines }}"
+  when:
+    - "':' in item"
+    - item.split(':')[0] is regex('^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$')
+  failed_when: false
