@@ -9,8 +9,6 @@
   become_user: "{{ lotus_user }}"
   become: true
 
-# TODO(bug): This task reports "changed" even when the download was skipped due to "creates" being set.
-# This may actually be a bug in Ansible - a task that is not triggered should not report "changed".
 - name: Download latest chain snapshot
   ansible.builtin.command:
     cmd: "aria2c -x5 https://snapshots.{{ 'calibrationnet' if use_calibrationnet else 'mainnet' }}.filops.net/minimal/latest.zst -o latest-lotus-snapshot.zst"
@@ -19,7 +17,7 @@
   async: 86400
   poll: 0
   register: download_chain_snapshot
-  changed_when: download_chain_snapshot.rc == 0
+  changed_when: "'rc' in download_chain_snapshot and download_chain_snapshot.rc == 0"
   become_user: "{{ lotus_user }}"
   become: true
 
