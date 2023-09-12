@@ -49,6 +49,7 @@
         cmd: "/usr/local/bin/boostd net id"
       register: boost_get_peer_id
       check_mode: false
+      changed_when: false
       when: boost_peer_id is not defined
       become_user: "{{ boost_user }}"
 
