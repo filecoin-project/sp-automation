@@ -56,3 +56,6 @@ smoketest: false
 
 # If you are ready for mainnet, you know what to do here. See the docs if you're not sure!
 ready_for_mainnet: false
+
+# Debug options, usually used only for development. Use with caution.
+debug_sealing_on_miner: false
