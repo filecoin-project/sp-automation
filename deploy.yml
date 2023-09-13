@@ -34,3 +34,26 @@
 
   roles:
     - zorlin.lotus_boost_actors
+
+- name: Collect Lotus API info and token
+  hosts: lotus_primary
+  become: true
+
+  tasks:
+    - name: Get lotus info
+      ansible.builtin.include_tasks: tasks/get_lotus_info.yml
+
+- name: Collect Lotus Miner API info and token
+  hosts: lotus_miner
+  become: true
+
+  tasks:
+    - name: Get lotus miner info
+      ansible.builtin.include_tasks: tasks/get_lotus_miner_info.yml
+
+- name: Deploy Booster HTTP
+  hosts: booster_http
+  become: true
+
+  roles:
+    - zorlin.fil_booster_http

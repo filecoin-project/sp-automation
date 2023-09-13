@@ -1,0 +1,21 @@
+{% set boostd_data_ip = hostvars[groups['boost_data'][0]]['ansible_' + boost_bind_interface]['ipv4']['address'] %}
+[Unit]
+Description=Booster HTTP service - Hot retrieval for Filecoin!
+After=network-online.target
+Wants=network-online.target systemd-networkd-wait-online.service
+
+[Service]
+User={{ boost_user }}
+Group={{ boost_group }}
+Restart=on-failure
+RestartSec=3s
+EnvironmentFile={{ boost_config_path }}/booster-http.conf
+ExecStart=/usr/local/bin/booster-http \
+    run --api-lid="ws://{{ boostd_data_ip }}:8044" \
+        --api-fullnode=$FULLNODE_API_INFO \
+        --api-storage=$MINER_API_INFO
+StandardOutput=append:{{ boost_log_dir }}/boostd-data.log
+StandardError=append:{{ boost_log_dir }}/boostd-data.log
+
+[Install]
+WantedBy=multi-user.target
