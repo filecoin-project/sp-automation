@@ -1,0 +1,10 @@
+---
+- name: Install booster-http configuration
+  ansible.builtin.template:
+    src: booster-http.conf.j2
+    dest: "{{ boost_config_path }}/booster-http.conf"
+    owner: "{{ boost_user }}"
+    group: "{{ boost_group }}"
+    mode: '0600'
+  notify:
+    - Restart booster-http

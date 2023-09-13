@@ -1,0 +1,27 @@
+---
+- name: Get and detect information about the Lotus user
+  user:
+    name: "{{ lotus_user }}"
+    state: present
+  check_mode: true
+  register: lotus_user_details
+
+# TODO(bug): The command we're calling is called *create-token* which implies it
+# will be creating a new token each time. It returns the same token every time, so we're fine for now -
+# but in the future this may need to be refactored...
+- name: Fetch Lotus API token
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/lotus-miner auth create-token --perm admin"
+  environment:
+    LOTUS_MINER_PATH: "{{ lotus_miner_path }}"
+  register: lotus_miner_get_auth_token
+  check_mode: false
+  changed_when: false
+  become_user: "{{ lotus_user }}"
+
+- name: If we successfully fetched a token, set it as a temporary fact
+  ansible.builtin.set_fact:
+    lotus_miner_auth_token: "{{ lotus_miner_get_auth_token.stdout }}"
+  when: lotus_miner_get_auth_token is defined
+  check_mode: false
+  changed_when: false

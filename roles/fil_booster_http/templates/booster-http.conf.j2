@@ -1,2 +1,2 @@
-FULLNODE_API_INFO={{ hostvars[groups['lotus_main'][0]]['lotus_auth_token'] }}:/ip4/{{ hostvars[groups['lotus_main'][0]]['ansible_' + lotus_bind_interface]['address'] }}/tcp/{{ lotus_daemon_port }}/http
-MINER_API_INFO={{ hostvars[groups['lotus_miner'][0]]['lotus_miner_auth_token'] }}:/ip4/{{ hostvars[groups['lotus_miner'][0]]['ansible_' + lotus_miner_bind_interface]['address'] }}/tcp/{{ lotus_miner_port }}/http
+FULLNODE_API_INFO={{ hostvars[groups['lotus_primary'][0]]['lotus_auth_token'] }}:/ip4/{{ hostvars[groups['lotus_primary'][0]]['ansible_' + lotusd_bind_interface]['ipv4']['address'] }}/tcp/{{ lotus_daemon_port }}/http
+MINER_API_INFO={{ hostvars[groups['lotus_miner'][0]]['lotus_miner_auth_token'] }}:/ip4/{{ hostvars[groups['lotus_miner'][0]]['ansible_' + lotus_miner_bind_interface]['ipv4']['address'] }}/tcp/{{ lotus_miner_port }}/http
