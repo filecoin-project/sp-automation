@@ -1,0 +1,3 @@
+YUGABYTE_HOSTS={% for host in groups['yugabytedb_tserver'] %}{{ hostvars[inventory_hostname]['ansible_' + yugabyte_bind_interface]['ipv4']['address'] }}{% if not loop.last %},{% endif %}{% endfor %} 
+YUGABYTE_CONNECT_STRING="postgresql://{{ boost_yugabytedb.username }}:{{ boost_yugabytedb.password }}@{{ boost_yugabytedb.host }}:5433/{{ boost_yugabytedb.database}}"
+BIND_ADDR="0.0.0.0:8044"

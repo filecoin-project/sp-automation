@@ -1,0 +1,112 @@
+---
+- name: List existing wallets
+  ansible.builtin.shell: "export LOTUS_PATH={{ lotus_path }} ; lotus wallet list"
+  register: wallet_list
+  become_user: "{{ lotus_user }}"
+  become: true
+  changed_when: false
+
+- name: If the wallet list is empty, set number_of_wallets to zero
+  ansible.builtin.set_fact:
+    number_of_wallets: 0
+  when: wallet_list.stdout == ""
+
+- name: If the wallet list is not empty, set number_of_wallets to the number of wallets in the list
+  ansible.builtin.set_fact:
+    number_of_wallets: "{{ wallet_list.stdout_lines[1:] | select('search', 'FIL') | list | length }}"
+  when: wallet_list.stdout != ""
+
+- name: If either wallet fact exists, check that all wallet facts exist
+  ansible.builtin.assert:
+    that:
+      - ansible_local.deals_wallet_address.wallet.address is defined
+      - ansible_local.collateral_wallet_address.wallet.address is defined
+      - ansible_local.owner_wallet_address.wallet.address is defined
+      - ansible_local.worker_wallet_address.wallet.address is defined
+  when:
+    ansible_local.deals_wallet_address.wallet.address is defined or
+    ansible_local.collateral_wallet_address.wallet.address is defined
+
+- name: If we have pre-existing wallet facts, use them to set the addresses for the owner and worker wallets
+  ansible.builtin.set_fact:
+    deals_wallet_address: "{{ ansible_local.deals_wallet_address.wallet.address }}"
+    collateral_wallet_address: "{{ ansible_local.collateral_wallet_address.wallet.address }}"
+    owner_wallet_address: "{{ ansible_local.owner_wallet_address.wallet.address }}"
+    worker_wallet_address: "{{ ansible_local.worker_wallet_address.wallet.address }}"
+  when:
+    ansible_local.deals_wallet_address.wallet.address is defined and
+    ansible_local.collateral_wallet_address.wallet.address is defined
+
+- name: If we have 3 wallets, something weird has happened, let the user know
+  ansible.builtin.assert:
+    that:
+      - number_of_wallets | int != 3
+    fail_msg: "You appear to have an unknown set of wallets in your Lotus installation. Please check your Lotus installation and try again or ask us for help."
+
+- name: If we have 4 wallets or more, assert that the user has set the wallet addresses.
+  ansible.builtin.assert:
+    that:
+      - deals_wallet_address is defined
+      - collateral_wallet_address is defined
+    fail_msg: "Your wallets appear to have been created outside of this automation. Please set all wallet facts and try again."
+  when: number_of_wallets | int > 3
+
+- name: If the deals wallet does not exist yet, create it.
+  ansible.builtin.command: "lotus wallet new bls"
+  environment:
+    LOTUS_PATH: "{{ lotus_path }}"
+  become_user: "{{ lotus_user }}"
+  become: true
+  register: create_deals_wallet
+  changed_when: create_deals_wallet.rc == 0
+  when: number_of_wallets | int == 2
+
+- name: If we created the deals wallet, set the deals_wallet_address fact permanently
+  ansible.builtin.template:
+    src: wallet.fact.j2
+    dest: "/etc/ansible/facts.d/deals_wallet_address.fact"
+    owner: root
+    group: root
+    mode: '0644'
+  vars:
+    wallet_fact_address: "{{ create_deals_wallet.stdout_lines[0] }}"
+  when: ( create_deals_wallet.rc | default(1) ) == 0
+
+- name: If we created the deals wallet, set the deals_wallet_address fact temporarily
+  ansible.builtin.set_fact:
+    deals_wallet_address: "{{ create_deals_wallet.stdout_lines[0] }}"
+  when: ( create_deals_wallet.rc | default(1) ) == 0
+
+- name: If the collateral wallet does not exist yet, create it.
+  ansible.builtin.command: "lotus wallet new bls"
+  environment:
+    LOTUS_PATH: "{{ lotus_path }}"
+  become_user: "{{ lotus_user }}"
+  become: true
+  register: create_collateral_wallet
+  changed_when: create_collateral_wallet.rc == 0
+  # This when conditional is a little silly, but it should work consistently. We always want to create this second wallet if we create the first one.
+  when: number_of_wallets | int == 2 or number_of_wallets | int == 3
+
+- name: If we created the collateral wallet, set the collateral_wallet_address fact permanently
+  ansible.builtin.template:
+    src: wallet.fact.j2
+    dest: "/etc/ansible/facts.d/collateral_wallet_address.fact"
+    owner: root
+    group: root
+    mode: '0644'
+  vars:
+    wallet_fact_address: "{{ create_collateral_wallet.stdout_lines[0] }}"
+  when: ( create_collateral_wallet.rc | default(1) ) == 0
+
+- name: If we created the collateral wallet, set the collateral_wallet_address fact temporarily
+  ansible.builtin.set_fact:
+    collateral_wallet_address: "{{ create_collateral_wallet.stdout_lines[0] }}"
+  when: ( create_collateral_wallet.rc | default(1) ) == 0
+
+- name: Print deals and collateral wallet addresses
+  ansible.builtin.debug:
+    msg:
+      - "Deals wallet address: {{ deals_wallet_address }}"
+      - "Collateral wallet address: {{ collateral_wallet_address }}"
+  when: deals_wallet_address is defined and collateral_wallet_address is defined

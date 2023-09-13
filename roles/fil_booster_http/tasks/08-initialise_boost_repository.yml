@@ -1,0 +1,44 @@
+---
+# Get Lotus auth token
+- name: Retrieve Lotus auth token
+  ansible.builtin.command:
+    cmd: "cat {{ lotus_user_details.home }}/.lotus{% if use_calibrationnet %}_calibnet{% endif %}/token"
+  register: lotus_auth_token
+  changed_when: false
+  check_mode: false
+  become: true
+  become_user: "{{ lotus_user }}"
+
+- name: Retrieve Lotus Miner auth token
+  ansible.builtin.command:
+    cmd: "cat {{ lotus_user_details.home }}/.lotusminer{% if use_calibrationnet %}_calibnet{% endif %}/token"
+  register: lotus_miner_auth_token
+  changed_when: false
+  check_mode: false
+  become: true
+  become_user: "{{ lotus_user }}"
+
+- name: Initialise Boost
+  ansible.builtin.shell:
+    cmd: >
+      boostd --vv init \
+        --api-sealer={{ lotus_miner_auth_token.stdout }}:/ip4/{{ hostvars[groups['lotus_miner'][0]]['ansible_' + lotus_miner_bind_interface]['ipv4']['address'] }}/tcp/{{ lotus_miner_port }} \
+        --api-sector-index={{ lotus_miner_auth_token.stdout }}:/ip4/{{ hostvars[groups['lotus_miner'][0]]['ansible_' + lotus_miner_bind_interface]['ipv4']['address'] }}/tcp/{{ lotus_miner_port }} \
+        --wallet-publish-storage-deals={{ deals_wallet_address }} \
+        --wallet-deal-collateral={{ collateral_wallet_address }} \
+        --max-staging-deals-bytes={{ max_staging_bytes }}
+    creates: "{{ boost_path }}/config.toml"
+  register: boost_init
+  environment:
+    FULLNODE_API_INFO: "{{ lotus_auth_token.stdout }}:/ip4/{{ hostvars[groups['lotus_primary'][0]]['ansible_' + lotusd_bind_interface]['ipv4']['address'] }}/tcp/{{ lotus_daemon_port }}"
+    MINER_API_INFO: "{{ lotus_miner_auth_token.stdout }}:/ip4/{{ hostvars[groups['lotus_miner'][0]]['ansible_' + lotus_miner_bind_interface]['ipv4']['address'] }}/tcp/{{ lotus_miner_port }}"
+  become: true
+  become_user: "{{ boost_user }}"
+
+- name: Check that Boost was initialised successfully
+  assert:
+    that:
+      - boost_init.stdout_lines is search("You can now start boost")
+    success_msg: "Boost was initialised successfully! Congratulations!"
+    fail_msg: "There was an issue initialising Boost."
+  when: boost_init is changed

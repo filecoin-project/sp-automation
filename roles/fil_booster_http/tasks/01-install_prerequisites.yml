@@ -1,0 +1,42 @@
+---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Ensure all packages are up to date
+  ansible.builtin.apt:
+    upgrade: dist
+
+- name: Install software dependencies
+  ansible.builtin.package:
+    name:
+      - acl
+      - mesa-opencl-icd
+      - ocl-icd-opencl-dev
+      - gcc
+      - git
+      - bzr
+      - jq
+      - pkg-config
+      - curl
+      - clang
+      - build-essential
+      - hwloc
+      - libhwloc-dev
+      - git-all
+      - wget
+      - aria2
+    state: present
+
+- name: Install system packages useful for managing via Ansible
+  ansible.builtin.package:
+    name:
+      - acl
+      - python3-pip
+
+- name: Install Python3 packages useful for managing via Ansible
+  ansible.builtin.pip:
+    name: psycopg2-binary
+    state: present
+    executable: /usr/bin/pip3

@@ -1,0 +1,17 @@
+[Unit]
+Description=Boostd Data service
+After=network-online.target
+Wants=network-online.target systemd-networkd-wait-online.service
+
+[Service]
+User={{ boost_user }}
+Group={{ boost_group }}
+EnvironmentFile={{ boost_config_path }}/boostd.env
+Restart=on-failure
+RestartSec=3s
+ExecStart=/usr/local/bin/boostd run
+StandardOutput=append:{{ boost_log_dir }}/boostd.log
+StandardError=append:{{ boost_log_dir }}/boostd.log
+
+[Install]
+WantedBy=multi-user.target

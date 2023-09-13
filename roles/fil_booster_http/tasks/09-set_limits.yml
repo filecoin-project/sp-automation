@@ -1,0 +1,15 @@
+---
+- name: Add ulimit soft limit to limits.conf
+  ansible.builtin.lineinfile:
+    path: /etc/security/limits.conf
+    line: "* soft nofile 1048576"
+    
+- name: Add ulimit hard limit to limits.conf
+  ansible.builtin.lineinfile:
+    path: /etc/security/limits.conf
+    line: "* hard nofile 1048576"
+
+# sysctl -p supposedly doesn't actually affect limits...? so we've commented this
+# - name: Reload sysctl
+#   ansible.posix.sysctl:
+#     reload: true
