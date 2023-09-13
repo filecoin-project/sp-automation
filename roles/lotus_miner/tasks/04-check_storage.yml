@@ -2,9 +2,8 @@
 # Ask Lotus Miner to check if we have any storage attached
 
 - name: Get a list of Lotus Miner storage paths
-  ansible.builtin.shell:
+  ansible.builtin.command:
     cmd: "lotus-miner storage list"
-    executable: /bin/bash
   environment:
     LOTUS_MINER_PATH: "{{ lotus_miner_path }}"
   register: lotus_miner_storage_list
@@ -12,6 +11,11 @@
   become: true
   changed_when: false
   failed_when: false
+
+- name: Print Lotus miner storage paths
+  debug:
+    msg: "{{ lotus_miner_storage_list.stdout_lines }}"
+  when: lotus_miner_storage_list.stdout_lines is defined and lotus_miner_storage_list.stdout_lines | length > 0
 
 - name: Convert output of Lotus Miner storage paths into a list of UUIDs
   set_fact:

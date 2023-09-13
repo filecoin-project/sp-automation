@@ -47,3 +47,6 @@
 
 - name: Set limits
   include_tasks: 03-set_limits.yml
+
+- name: Install booster-http as a systemd service and start it
+  include_tasks: 04-systemd_service.yml
