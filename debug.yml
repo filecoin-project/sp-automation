@@ -5,8 +5,8 @@
   become: true
 
 - name: Debug playbook
-  hosts: boost
+  hosts: booster_http
   become: true
 
   roles:
-    - zorlin.fil_boost
+    - zorlin.fil_booster_http
