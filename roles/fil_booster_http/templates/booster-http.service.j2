@@ -12,10 +12,11 @@ RestartSec=3s
 EnvironmentFile={{ boost_config_path }}/booster-http.conf
 ExecStart=/usr/local/bin/booster-http \
     run --api-lid="ws://{{ boostd_data_ip }}:8044" \
-        --api-fullnode=$FULLNODE_API_INFO \
-        --api-storage=$MINER_API_INFO
-StandardOutput=append:{{ boost_log_dir }}/boostd-data.log
-StandardError=append:{{ boost_log_dir }}/boostd-data.log
+        --api-fullnode=${FULLNODE_API_INFO} \
+        --api-storage=${MINER_API_INFO} \
+        --serve-files=true
+StandardOutput=append:{{ boost_log_dir }}/booster-http.log
+StandardError=append:{{ boost_log_dir }}/booster-http.log
 
 [Install]
 WantedBy=multi-user.target
