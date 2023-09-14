@@ -21,8 +21,8 @@ sp_domain: "subdomain.your.miner.domain"
 
 # Location for lotus and lotus-miner. The chain is stored under lotus_path. This requires fast storage (SSD or NVMe).
 # Defaults to ~/.lotus, ~/.lotusminer respectively (with "_calibnet" appended if use_calibrationnet is true).
-#lotus_path: "/opt/.lotus"
-#lotus_miner_path: "/opt/.lotusminer"
+lotus_path: "{{ lotus_user_details.home }}/.lotus{% if use_calibrationnet %}_calibnet{% endif %}"
+lotus_miner_path: "{{ lotus_user_details.home }}/.lotusminer{% if use_calibrationnet %}_calibnet{% endif %}"
 
 # Location for boost.
 # Defaults to ~/.boost (with "_calibnet" appended if use_calibrationnet is true).
