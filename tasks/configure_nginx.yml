@@ -1,0 +1,34 @@
+---
+- name: Determine if Certbot is managing anything yet - read nginx site config
+  ansible.builtin.slurp:
+    src: /etc/nginx/sites-available/sp-stack.conf
+  register: sp_stack_nginx_content
+  changed_when: false
+  failed_when: false
+
+- name: Determine if Certbot is managing anything yet - look for "managed by Certbot" and set a fact if found
+  ansible.builtin.set_fact:
+    managed_by_certbot: true
+  when: "'# managed by Certbot' in (sp_stack_nginx_content['content'] | b64decode)"
+
+- name: Create a site-available file for nginx
+  ansible.builtin.template:
+    src: sp-stack.conf.j2
+    dest: /etc/nginx/sites-available/sp-stack.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload nginx
+
+- name: Create a symbolic link to the sites-enabled directory
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/sp-stack.conf
+    dest: /etc/nginx/sites-enabled/sp-stack.conf
+    state: link
+  notify: Reload nginx
+
+- name: Disable built in default nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reload nginx

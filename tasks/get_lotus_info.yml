@@ -1,6 +1,6 @@
 ---
 - name: Get and detect information about the Lotus user
-  user:
+  ansible.builtin.user:
     name: "{{ lotus_user }}"
     state: present
   check_mode: true

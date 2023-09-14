@@ -1,6 +1,8 @@
 ---
 roles:
   - name: geerlingguy.nodejs
+  - name: geerlingguy.nginx
+  - name: robertdebock.certbot
   - name: gantsign.golang
   - name: hurricanehrndz.rustup
   # We use a slightly modified role for the nvidia driver because the default one fails when installing in CUDA mode with newer drivers.

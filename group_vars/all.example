@@ -6,11 +6,18 @@ lotus_group: lotus
 # Boost user and group name
 boost_user: boost
 
+# Certbot email - used to automatically generate SSL certificates for Booster HTTP
+# You MUST change this, or you will get an error when running the playbook.
+certbot_email: hello@filecoin.io
+
 # Network interface you would like each daemon to listen on.
 lotusd_bind_interface: enp6s18
 lotus_miner_bind_interface: enp6s18
 yugabyte_bind_interface: enp6s18
 boost_bind_interface: enp6s18
+
+# (Sub)domain to use for listening for new requests and retrievals over HTTP(S)
+sp_domain: "subdomain.your.miner.domain"
 
 # Location for lotus and lotus-miner. The chain is stored under lotus_path. This requires fast storage (SSD or NVMe).
 # Defaults to ~/.lotus, ~/.lotusminer respectively (with "_calibnet" appended if use_calibrationnet is true).
