@@ -1,9 +1,9 @@
-# lotus-automation for ansible
+# SP automation with Ansible
 This is an experimental port of lotus-automation to Ansible.
 
 ## Requirements
 - A modern version of Ansible and Python3 (a specific minimum version will be specified at a later date).
-- All requirements specified in the [lotus-automation README](../README.md#requirements).
+- All requirements specified in the [SP-automation README](../README.md#requirements).
 - Passwordless sudo enabled on your Lotus node (alternatively, add the flags --become and --ask-become-pass when running ansible-playbook)
 - If you are using Secure Boot on your Lotus node, please read [the note on Secure Boot](#note-on-secure-boot).
 
