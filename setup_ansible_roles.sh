@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Check if the script is being run from the "sp-stack-automation" folder
-if [ "$(basename "$(pwd)")" != "sp-stack-automation" ]; then
-    echo "Please run this script from the 'sp-stack-automation' folder."
+# Check if the script is being run from the "sp-automation" folder
+if [ "$(basename "$(pwd)")" != "sp-automation" ]; then
+    echo "Please run this script from the 'sp-automation' folder."
     exit 1
 fi
 
