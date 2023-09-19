@@ -1,4 +1,4 @@
-# SP automation with Ansible
+# SP Automation Stack for Ansible
 This is an experimental port of lotus-automation to Ansible.
 
 ## Requirements
