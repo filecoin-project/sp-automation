@@ -5,3 +5,9 @@ group_vars/yugabytedb
 group_vars/boost
 host_vars/*
 inventory
+roles/fil_boost/fil_boost
+roles/fil_booster_http/fil_booster_http
+roles/lotus_boost_actors/lotus_boost_actors
+roles/lotus_daemon/lotus_daemon
+roles/lotus_miner/lotus_miner
+roles/yugabytedb/yugabytedb
