@@ -68,6 +68,12 @@
     - name: Configure Nginx
       ansible.builtin.include_tasks: tasks/configure_nginx.yml
 
+  handlers:
+    - name: Reload nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+
 - name: Configure TLS/SSL using Certbot and Let's Encrypt
   hosts: booster_http
   become: true
