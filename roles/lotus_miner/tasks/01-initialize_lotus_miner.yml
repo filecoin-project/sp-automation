@@ -1,13 +1,4 @@
 ---
-# transfer_funds
-# wait_for_funds
-# initialize_sp ${SECTOR_SIZE}
-# configure_miner ${MINER_IP} ${MINER_PORT} ${LOTUS_MINER_PATH}
-# start_miner ${LOG_DIR}
-# #stop_miner
-# #start_miner ${LOG_DIR}
-# wait_for_miner ${LOG_DIR}
-
 - name: Create parameter cache directory
   ansible.builtin.file:
     path: "{{ param_cache }}"
