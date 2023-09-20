@@ -26,21 +26,21 @@
     mode: 0640
 
 - name: Download chain snapshots
-  ansible.builtin.include_tasks: 04-import_chain_snapshot.yml
+  ansible.builtin.include_tasks: 01-import_chain_snapshot.yml
   when: not smoketest
 
 - name: Install systemd service and environment for Lotus and start Lotus
-  ansible.builtin.include_tasks: 05-systemd_lotusd.yml
+  ansible.builtin.include_tasks: 02-systemd_lotusd.yml
 
 - name: Synchronize and initialize Lotus
-  ansible.builtin.include_tasks: 06-initialize_lotus.yml
+  ansible.builtin.include_tasks: 03-initialize_lotus.yml
 
 - name: Check Lotus reachability
-  ansible.builtin.include_tasks: 07-check_lotus_reachability.yml
+  ansible.builtin.include_tasks: 04-check_lotus_reachability.yml
 
 - name: Check that Lotus is synced
-  ansible.builtin.include_tasks: 08-check_lotus_synced.yml
+  ansible.builtin.include_tasks: 05-check_lotus_synced.yml
   when: not smoketest
 
 - name: Check that Lotus is installed and appears to be working
-  ansible.builtin.include_tasks: 09-final_preflight.yml
+  ansible.builtin.include_tasks: 06-final_preflight.yml
