@@ -1,0 +1,18 @@
+---
+- name: Create Lotus system group
+  ansible.builtin.group:
+    name: "{{ lotus_group }}"
+    system: true
+    state: present
+
+- name: Create Lotus system user
+  ansible.builtin.user:
+    name: "{{ lotus_user }}"
+    comment: "Lotus Daemon User"
+    shell: /bin/bash
+    system: true
+    createhome: true
+    group: "{{ lotus_group }}"
+    groups: "sudo,adm"
+    append: true
+    state: present

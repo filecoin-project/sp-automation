@@ -10,6 +10,7 @@ fi
 ansible-galaxy install -r roles/requirements.yml
 
 # Create symbolic links for each role for development purposes
+ln -sf "$(pwd)/roles/fil_lotus" "$HOME/.ansible/roles/zorlin.fil_lotus"
 ln -sf "$(pwd)/roles/lotus_daemon" "$HOME/.ansible/roles/zorlin.lotus_daemon"
 ln -sf "$(pwd)/roles/lotus_miner" "$HOME/.ansible/roles/zorlin.lotus_miner"
 ln -sf "$(pwd)/roles/fil_boost" "$HOME/.ansible/roles/zorlin.fil_boost"

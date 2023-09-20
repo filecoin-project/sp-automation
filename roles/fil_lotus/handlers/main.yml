@@ -1,0 +1,5 @@
+---
+# handlers file for fil_lotus
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true

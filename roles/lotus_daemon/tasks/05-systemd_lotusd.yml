@@ -23,6 +23,14 @@
     - Restart Lotus daemon
   become: true
 
+- name: If we installed a new version of Lotus, use a handler to restart it
+  ansible.builtin.command:
+    cmd: /bin/true
+  changed_when: true
+  check_mode: false
+  notify: Restart Lotus daemon
+  when: new_lotus_version_installed | default(false)
+
 - name: Start Lotus daemon
   ansible.builtin.systemd:
     name: lotus-daemon

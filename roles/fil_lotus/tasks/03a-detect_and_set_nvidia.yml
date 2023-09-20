@@ -99,7 +99,9 @@
     name: cuda-toolkit-12-2
     state: present
   become: true
-  when: gpu_detected | bool
+  when: 
+    - install_nvidia_driver is defined and install_nvidia_driver | bool
+    - gpu_detected | bool
 
 - name: Download the CUDA Samples so we can get more information about our GPU.
   ansible.builtin.git:

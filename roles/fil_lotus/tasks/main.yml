@@ -1,0 +1,21 @@
+---
+# tasks file for lotus_daemon
+- name: Create Lotus user and group
+  ansible.builtin.include_tasks: 00-lotus_user_and_group.yml
+
+- name: Install prerequisites
+  ansible.builtin.include_tasks: 01-install_prerequisites.yml
+
+- name: Set limits and sysctl settings
+  ansible.builtin.include_tasks: 02-set_limits_and_sysctl.yml
+
+- name: Create log folder
+  ansible.builtin.file:
+    path: "{{ log_dir }}"
+    state: directory
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_group }}"
+    mode: 0700
+
+- name: Build and install Lotus
+  ansible.builtin.include_tasks: 03-build_and_install_lotus.yml

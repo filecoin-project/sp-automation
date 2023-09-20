@@ -24,7 +24,11 @@
 
 - name: Detect and set gpu_details if a NVIDIA card is present and we are installing the NVIDIA driver
   ansible.builtin.include_tasks: 03a-detect_and_set_nvidia.yml
-  when: install_nvidia_driver | bool
+
+- name: If GPU details are set, build with GPU support
+  ansible.builtin.set_fact:
+    gpu_build_flags: "export FFI_USE_CUDA=1"
+  when: gpu_details != ""
 
 - name: Check if SHA_NI or SHA256 exist in CPU flags
   ansible.builtin.set_fact:
@@ -33,12 +37,12 @@
 
 - name: Set build flags if SHA256 extensions were found
   ansible.builtin.set_fact:
-    build_flags: "export RUSTFLAGS='-C target-cpu=native -g' ; export FFI_BUILD_FROM_SOURCE=1 ; export FFI_USE_MULTICORE_SDR=0; export RUST_GPU_TOOLS_CUSTOM_GPU='{{ gpu_details }}'"
+    build_flags: "export RUSTFLAGS='-C target-cpu=native -g' ; export FFI_BUILD_FROM_SOURCE=1 ; export FFI_USE_MULTICORE_SDR=0; export RUST_GPU_TOOLS_CUSTOM_GPU='{{ gpu_details }}' {% if gpu_build_flags is defined %}; {{ gpu_build_flags }}{% endif %}"
   when: has_sha256 or has_sha_ni
 
 - name: Set build flags if SHA256 extensions were not found
   ansible.builtin.set_fact:
-    build_flags: "export FFI_USE_MULTICORE_SDR=0 ; export RUST_GPU_TOOLS_CUSTOM_GPU='{{ gpu_details }}'"
+    build_flags: "export FFI_USE_MULTICORE_SDR=0 ; export RUST_GPU_TOOLS_CUSTOM_GPU='{{ gpu_details }}' {% if gpu_build_flags is defined %}; {{ gpu_build_flags }}{% endif %}"
   when: not has_sha256 and not has_sha_ni
 
 - name: Print build flags
@@ -113,8 +117,5 @@
     chdir: "{{ build_dir }}/lotus"
     target: install
   when: lotus_build_required | default(false)
-  notify: Restart Lotus daemon
+  register: new_lotus_version_installed
   become: true
-
-- name: Flush handlers to restart Lotus if needed
-  ansible.legacy.meta: flush_handlers
