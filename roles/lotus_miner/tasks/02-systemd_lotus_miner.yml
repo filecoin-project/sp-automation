@@ -10,6 +10,14 @@
     - Reload systemd
     - Restart Lotus miner
 
+- name: If we installed a new version of Lotus, use a handler to restart it
+  ansible.builtin.command:
+    cmd: /bin/true
+  changed_when: true
+  check_mode: false
+  notify: Restart Lotus miner
+  when: new_lotus_version_installed | default(false)
+
 - name: Ensure Lotus Miner is started
   ansible.builtin.systemd:
     name: lotus-miner
