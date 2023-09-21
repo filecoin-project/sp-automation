@@ -95,6 +95,10 @@ install_nvidia_driver: false
 nvidia_driver_ubuntu_install_from_cuda_repo: true
 nvidia_driver_ubuntu_cuda_package: "cuda-drivers-535"
 
+# Locations for the miner proof and param caches. This needs to be fast storage, ideally NVMe, and requires about 150GiB of space.
+param_cache: "/opt/cache/param_cache"
+parent_cache: "/opt/cache/parent_cache"
+
 # Choose the sector size for your miner: 32GiB / 64GiB
 sector_size: "32GiB"
 
