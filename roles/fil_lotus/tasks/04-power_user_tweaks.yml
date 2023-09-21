@@ -1,0 +1,10 @@
+---
+- name: Freeze Linux kernel version
+  ansible.builtin.command: "apt-mark hold linux-image-generic linux-headers-generic"
+  become: true
+  when: power_freeze_kernel | bool
+
+- name: Freeze NVIDIA driver version
+  ansible.builtin.command: "apt-mark hold {{ nvidia_driver_ubuntu_cuda_package }}"
+  become: true
+  when: power_freeze_nvidia_drivers | bool

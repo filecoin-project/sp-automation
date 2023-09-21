@@ -19,3 +19,6 @@
 
 - name: Build and install Lotus
   ansible.builtin.include_tasks: 03-build_and_install_lotus.yml
+
+- name: Enable power user tweaks for Lotus
+  ansible.builtin.include_tasks: 04-power_user_tweaks.yml

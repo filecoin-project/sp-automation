@@ -36,3 +36,10 @@ install_nvidia_driver: false
 
 # If you are ready for mainnet, you know what to do here. See the docs if you're not sure!
 ready_for_mainnet: false
+
+### Power user tweaks, use with caution! ###
+# Driver and kernel upgrade controls. Note that freezing the driver version does not necessarily prevent kernel upgrades from being possible.
+# Freeze kernel version to prevent automatic kernel upgrades.
+power_freeze_kernel: false
+# Freeze NVIDIA drivers to prevent automatic driver upgrades.
+power_freeze_nvidia_drivers: false
