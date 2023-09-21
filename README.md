@@ -32,7 +32,7 @@ cp group_vars/yugabytedb.example group_vars/yugabytedb && editor group_vars/yuga
 ```
 ansible-galaxy install -r roles/requirements.yml ; ansible-galaxy install -r collections/requirements.yml
 ```
-- Now run the playbook and deploy your Lotus node.
+- Now run the playbook and deploy your Lotus node. (Note: If any of your nodes do not have **passwordless sudo** enabled, add --ask-become-pass to the command below)
 ```
 ansible-playbook deploy.yml
 ```
