@@ -45,4 +45,4 @@
       ansible.builtin.pause:
         prompt: "Lotus daemon is not visible via port {{ lotus_libp2p_port }} on {{ lotus_public_ip }}. Check your firewall and router settings, and restart Lotus. Press [ENTER] to retry"
     - name: Loop back to the start of this task list
-      ansible.builtin.include_tasks: 07-check_lotus_reachability.yml
+      ansible.builtin.include_tasks: 04-check_lotus_reachability.yml
