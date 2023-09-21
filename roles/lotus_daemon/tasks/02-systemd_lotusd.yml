@@ -28,7 +28,7 @@
     cmd: /bin/true
   changed_when: true
   notify: Restart Lotus daemon
-  when: new_lotus_version_installed | default(false)
+  when: new_lotus_version_installed.changed | default(false)
 
 - name: Start Lotus daemon
   ansible.builtin.systemd:
