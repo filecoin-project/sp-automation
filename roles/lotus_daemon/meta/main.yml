@@ -49,6 +49,7 @@ galaxy_info:
     #       Maximum 20 tags per role.
 
 dependencies:
+  - name: "zorlin.fil_lotus"
   - name: "geerlingguy.nodejs"
   - name: "gantsign.golang"
   - name: "hurricanehrndz.rustup"
