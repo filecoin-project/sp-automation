@@ -16,7 +16,7 @@
   changed_when: true
   check_mode: false
   notify: Restart Lotus miner
-  when: new_lotus_version_installed | default(false)
+  when: new_lotus_version_installed.changed
 
 - name: Ensure Lotus Miner is started
   ansible.builtin.systemd:
