@@ -16,9 +16,9 @@ git clone https://github.com/filecoin-project/sp-automation.git && cd sp-automat
 ```
 ./setup_ansible_roles.sh
 ```
-- Copy `ansible/inventory.example` to `ansible/inventory` and edit it to suit your needs.
+- Copy `inventory.example` to `inventory` and edit it to suit your needs.
 ```
-cp ansible/inventory.example ansible/inventory && editor ansible/inventory
+cp inventory.example inventory && editor inventory
 ```
 - Copy the global configuration - `ansible/group_vars/all.example` to `ansible/group_vars/all` and edit it to suit your needs.
 ```
