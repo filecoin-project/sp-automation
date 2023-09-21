@@ -27,7 +27,6 @@
   ansible.builtin.command:
     cmd: /bin/true
   changed_when: true
-  check_mode: false
   notify: Restart Lotus daemon
   when: new_lotus_version_installed | default(false)
 
