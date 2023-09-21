@@ -26,7 +26,7 @@ cp group_vars/all.example group_vars/all && editor group_vars/all
 ```
 - Copy the YugabyteDB configuration - `group_vars/yugabytedb.example` to `group_vars/yugabytedb` and edit it to suit your needs.
 ```
-cp group_vars/yugabytedb.example group_vars/yugabytedb && editor group_vars/yugabytedb`
+cp group_vars/yugabytedb.example group_vars/yugabytedb && editor group_vars/yugabytedb
 ```
 - If this is your first time running lotus-automation for Ansible on this machine, run the Ansible Galaxy install process.
 ```
