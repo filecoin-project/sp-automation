@@ -5,6 +5,7 @@ lotus_group: lotus
 
 # Boost user and group name
 boost_user: boost
+boost_group: boost
 
 # Certbot email - used to automatically generate SSL certificates for Booster HTTP
 # You MUST change this, or you will get an error when running the playbook.
