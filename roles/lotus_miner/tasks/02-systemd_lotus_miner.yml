@@ -25,6 +25,8 @@
     enabled: true
   become: true
 
+# MUST DO: add wait until miner is started, poll 'lotus-miner info' until the API responds
+
 # TODO(feat): We should more gracefully handle restarting Lotus miner.
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
