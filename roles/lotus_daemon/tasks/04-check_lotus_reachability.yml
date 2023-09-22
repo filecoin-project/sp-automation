@@ -1,21 +1,18 @@
 ---
 - name: Get public IPv4 address using ifconfig.me
-  ansible.builtin.uri:
-    url: https://ifconfig.me
-    return_content: yes
-    status_code: 200
-    validate_certs: false
-    http_agent: curl
+  ansible.builtin.command:
+    cmd: "curl -4 https://ifconfig.me"
   register: public_ipv4
-  until: public_ipv4.status == 200
+  until: public_ipv4.rc == 0
   retries: 3
   delay: 3
   when: lotus_public_ip is not defined
 
+
 - name: If we now have a public IPv4 address, use it
   ansible.builtin.set_fact:
-    lotus_public_ip: "{{ public_ipv4.content }}"
-  when: lotus_public_ip is not defined and public_ipv4.status == 200
+    lotus_public_ip: "{{ public_ipv4.stdout }}"
+  when: lotus_public_ip is not defined and public_ipv4.rc == 0
 
 # We use a clever hack here to loop until we succeed. Ref: https://github.com/ansible/ansible/issues/46203#issuecomment-496545220
 - name: Check Lotus reachability
