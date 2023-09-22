@@ -16,12 +16,6 @@
 # We use a clever hack here to loop until we succeed. Ref: https://github.com/ansible/ansible/issues/46203#issuecomment-496545220
 - name: Check Lotus reachability
   block:
-    - name: Restart Lotus
-      ansible.builtin.service:
-        name: lotus-daemon
-        state: restarted
-      become: true
-
     - name: Wait for API to be available
       ansible.builtin.wait_for:
         host: localhost
