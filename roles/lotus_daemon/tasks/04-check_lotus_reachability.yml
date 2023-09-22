@@ -8,7 +8,6 @@
   delay: 3
   when: lotus_public_ip is not defined
 
-
 - name: If we now have a public IPv4 address, use it
   ansible.builtin.set_fact:
     lotus_public_ip: "{{ public_ipv4.stdout }}"
@@ -17,19 +16,34 @@
 # We use a clever hack here to loop until we succeed. Ref: https://github.com/ansible/ansible/issues/46203#issuecomment-496545220
 - name: Check Lotus reachability
   block:
+    - name: Restart Lotus
+      ansible.builtin.service:
+        name: lotus-daemon
+        state: restarted
+      become: true
+
+    - name: Wait for API to be available
+      ansible.builtin.wait_for:
+        host: localhost
+        port: "{{ lotus_libp2p_port }}"
+        delay: 0
+        timeout: 20
+
     - name: Ask Lotus if it's publicly reachable
       ansible.builtin.shell:
-        cmd: "set -o pipefail ; lotus net reachability | grep 'Public'"
+        cmd: "set -o pipefail ; lotus net reachability"
         executable: /bin/bash
       register: libp2p_reachability
-      until: "ERROR:" not in libp2p_reachability.stdout
-      retries: 3
-      delay: 5
       environment:
         LOTUS_PATH: "{{ lotus_path }}"
       changed_when: false
       become_user: "{{ lotus_user }}"
       become: true
+      retries: 5  # Number of retries before giving up
+      delay: 10  # Delay in seconds between retries
+      until: >
+        'ERROR' not in libp2p_reachability.stderr and
+        'Public' in libp2p_reachability.stdout
 
     - name: If publicly reachable, report success!
       ansible.builtin.debug:
