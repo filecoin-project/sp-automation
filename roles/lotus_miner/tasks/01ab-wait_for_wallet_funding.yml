@@ -10,6 +10,11 @@
       - "Waiting for both wallets to be funded with at least FIL = {{ wallet_fund_threshold }}"
   when: "owner_wallet_balance | float < wallet_fund_threshold or worker_wallet_balance | float < wallet_fund_threshold"
 
+- name: Pause to give the user a chance to transfer funds
+  ansible.builtin.pause:
+    prompt: "Press [ENTER] to continue once you have transferred funds to your wallets"
+  when: "owner_wallet_balance | float < wallet_fund_threshold or worker_wallet_balance | float < wallet_fund_threshold"
+
 - name: Loop back to beginning
   include_tasks: 01ab-wait_for_wallet_funding.yml
   when: "owner_wallet_balance | float < wallet_fund_threshold or worker_wallet_balance | float < wallet_fund_threshold"
