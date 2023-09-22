@@ -4,7 +4,6 @@ After=network-online.target
 Requires=network-online.target
 
 [Service]
-Environment=GOLOG_FILE="{{ log_dir }}/lotus.log"
 EnvironmentFile=/etc/default/lotus-daemon
 User={{ lotus_user }}
 Group={{ lotus_group }}
@@ -14,8 +13,7 @@ RestartSec=10
 
 LimitNOFILE=256000:512000
 
-StandardOutput=append:{{ log_dir }}/lotus.log
-StandardError=append:{{ log_dir }}/lotus.log
+SyslogIdentifier=lotus
 
 [Install]
 WantedBy=multi-user.target

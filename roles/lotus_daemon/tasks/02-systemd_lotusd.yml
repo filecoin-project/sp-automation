@@ -21,8 +21,8 @@
   ansible.builtin.template:
     src: lotus-daemon.env.j2
     dest: /etc/default/lotus-daemon
-    owner: root
-    group: root
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_group }}"
     mode: 0644
   notify:
     - Reload systemd
