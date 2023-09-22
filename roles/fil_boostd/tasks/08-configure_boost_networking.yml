@@ -1,19 +1,14 @@
 ---
 # TODO(bug): This does not gracefully handle a dual stack machine. In this case, it may respond with an IPv6 address instead of IPv4.
-# A future fix will be to shell out to `curl -4 https://ifconfig.me` instead.
 - name: Get public IPv4 address using ifconfig.me
-  ansible.builtin.uri:
-    url: https://ifconfig.me
-    return_content: yes
-    status_code: 200
-    validate_certs: false
-    http_agent: curl
+  ansible.builtin.command:
+    cmd: "curl -4 https://ifconfig.me"
   register: boost_get_public_ip
-  until: boost_get_public_ip.status == 200
+  until: boost_get_public_ip.rc == 0
   retries: 3
   delay: 3
-  check_mode: false
   when: boost_public_ip is not defined
+  check_mode: false
 
 - name: If we now have a public IPv4 address, use it
   ansible.builtin.set_fact:

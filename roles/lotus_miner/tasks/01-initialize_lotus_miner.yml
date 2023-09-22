@@ -1,4 +1,12 @@
 ---
+- name: Create log file
+  ansible.builtin.file:
+    path: "{{ log_dir }}/lotusminer.log"
+    state: touch
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_group }}"
+    mode: 0700
+
 - name: Create parameter cache directory
   ansible.builtin.file:
     path: "{{ param_cache }}"
