@@ -74,7 +74,7 @@
 - name: Determine if we need to build Lotus
   ansible.builtin.set_fact:
     lotus_build_required: "{{ lotus_version | regex_replace('^v', '') not in lotus_version_installed.stdout }}"
-  when: lotus_version_installed is defined
+  when: lotus_version_installed is defined and lotus_version_installed.stdout is defined
 
 - name: Determine if we have a calibnet version of Lotus installed, but want a mainnet build
   ansible.builtin.set_fact:
