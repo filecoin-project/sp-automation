@@ -1,6 +1,6 @@
 ---
 - name: Get wallet balances
-  include_tasks: 03a-get_wallet_balances.yml
+  include_tasks: 02a-get_wallet_balances.yml
 
 - name: Wait 30 seconds if we do not have funds yet.
   ansible.builtin.pause:
@@ -8,9 +8,9 @@
   when: "deals_wallet_balance | float < boost_wallet_fund_threshold or collateral_wallet_balance | float < boost_wallet_fund_threshold"
 
 - name: Get wallet balances again
-  include_tasks: 03a-get_wallet_balances.yml
+  include_tasks: 02a-get_wallet_balances.yml
   when: "deals_wallet_balance | float < boost_wallet_fund_threshold or collateral_wallet_balance | float < boost_wallet_fund_threshold"
 
 - name: If we still do not have funds, loop
-  include_tasks: 03b-wait_for_wallet_funding.yml
+  include_tasks: 02b-wait_for_wallet_funding.yml
   when: "deals_wallet_balance | float < boost_wallet_fund_threshold or collateral_wallet_balance | float < boost_wallet_fund_threshold"

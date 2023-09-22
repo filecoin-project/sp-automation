@@ -1,11 +1,11 @@
 ---
-- name: Create log file
-  ansible.builtin.file:
-    path: "{{ log_dir }}/lotus.log"
-    state: file
-    owner: "{{ lotus_user }}"
-    group: "{{ lotus_group }}"
-    mode: 0700
+# - name: Create log file
+#   ansible.builtin.file:
+#     path: "{{ log_dir }}/lotus.log"
+#     state: file
+#     owner: "{{ lotus_user }}"
+#     group: "{{ lotus_group }}"
+#     mode: 0700
 
 - name: Install systemd environment file
   ansible.builtin.template:
