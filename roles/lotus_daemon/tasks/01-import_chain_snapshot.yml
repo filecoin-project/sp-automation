@@ -68,29 +68,3 @@
   become_user: "{{ lotus_user }}"
   become: true
   when: not chain_imported.stat.exists
-
-# These steps are disabled as they don't actually seem to do anything -
-# without Lotus running as a daemon, no synchronisation occurs and any attempt to run "lotus sync wait" results in blank output from Lotus.
-# We may want to move these somewhere later in the playbook/roles, or remove them entirely.
-# (Update from Wings, later: We did move them, see 08-check_lotus_synced.yml
-# We'll remove the below code block permanently later)
-
-# - name: Synchronise Lotus with the network
-#   shell:
-#     cmd: "export LOTUS_PATH={{ lotus_path }} ; nohup lotus sync wait > {{ log_dir }}/lotus-daemon.log 2>&1 &"
-#     executable: /bin/bash
-#   become_user: "{{ lotus_user }}"
-#   become: true
-#   when: import_chain_snapshot_status.rc == 0
-
-# - name: Ensure Lotus is synchronised with the network (this will take a while, and show "FAILED" periodically until it succeeds)
-#   shell:
-#     cmd: "grep -q 'parameter and key-fetching complete' {{ log_dir }}/lotus-import-snapshot.log"
-#     executable: /bin/bash
-#   become_user: "{{ lotus_user }}"
-#   become: true
-#   register: import_chain_snapshot_status
-#   until: import_chain_snapshot_status.rc == 0
-#   retries: 10000
-#   delay: 30
-#   when: download_chain_snapshot_status.finished
