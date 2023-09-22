@@ -17,6 +17,7 @@
   register: lotus_miner_get_auth_token
   check_mode: false
   changed_when: false
+  failed_when: false
   become_user: "{{ lotus_user }}"
 
 - name: If we successfully fetched a token, set it as a temporary fact
@@ -25,3 +26,4 @@
   when: lotus_miner_get_auth_token is defined
   check_mode: false
   changed_when: false
+  failed_when: false

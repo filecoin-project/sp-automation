@@ -36,7 +36,7 @@
 
 - name: Download proof parameters
   ansible.builtin.shell:
-    cmd: "lotus-miner fetch-params 32GiB"
+    cmd: "bash -c 'IPFS_GATEWAY=$IPFS_GATEWAY lotus-miner fetch-params 32GiB'"
     executable: /bin/bash
     chdir: "{{ lotus_path }}"
   become_user: "{{ lotus_user }}"

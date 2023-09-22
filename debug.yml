@@ -20,16 +20,9 @@
     - name: Get lotus miner info
       ansible.builtin.include_tasks: tasks/get_lotus_miner_info.yml
 
-# - name: Debug - Deploy Lotus Worker
-#   hosts: lotus_worker
-#   become: true
-
-#   roles:
-#     - zorlin.fil_lotus
-
 - name: Deploy Lotus
-  hosts: boost
+  hosts: lotus_miner
   become: true
 
   roles:
-    - zorlin.fil_booster_http
+    - zorlin.lotus_miner
