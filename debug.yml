@@ -20,6 +20,13 @@
     - name: Get lotus miner info
       ansible.builtin.include_tasks: tasks/get_lotus_miner_info.yml
 
+- name: Deploy YugabyteDB
+  hosts: yugabytedb
+  become: true
+
+  roles:
+    - zorlin.yugabytedb
+
 - name: Deploy Lotus
   hosts: lotus_miner
   become: true

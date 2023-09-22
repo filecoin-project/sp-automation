@@ -1,4 +1,18 @@
 ---
+- name: Get CPU flags from /proc/cpuinfo
+  ansible.builtin.shell:
+    cmd: "cat /proc/cpuinfo | grep 'flags' | head -1 | awk '{print substr($0, index($0, $3))}'"
+  register: cpu_flags
+  check_mode: false
+  changed_when: false
+
+- name: Check for SSE4.2 instruction set before proceeding
+  ansible.builtin.assert:
+    that:
+      - "'sse4_2' in cpu_flags.stdout"  # Checking for SSE4.2 support
+    fail_msg: "Your CPU does not support the SSE4.2 instruction set, which is required for YugabyteDB to run. Please use a different CPU."
+    success_msg: "Your CPU supports the SSE4.2 instruction set, which is required for YugabyteDB to run. Proceeding with installation."
+
 # We need `acl` for become_user to work correctly.
 - name: Install prerequisites
   ansible.builtin.package:
