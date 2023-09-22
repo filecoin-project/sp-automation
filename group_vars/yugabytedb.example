@@ -1,4 +1,8 @@
 ---
+# User and group for YugabyteDB
+yugabyte_user: yugabyte
+yugabyte_group: yugabyte
+
 # Configuration for YugabyteDB nodes
 yugabyte_bind_interface: enp6s18
 
