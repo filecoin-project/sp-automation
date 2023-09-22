@@ -4,6 +4,8 @@ roles:
   - name: geerlingguy.nginx
   - name: robertdebock.certbot
   - name: gantsign.golang
-  - name: hurricanehrndz.rustup
+  # We use a modified version of rustup to solve for an obscure bug we should try to get fixed upstream
+  #- name: hurricanehrndz.rustup
+  - name: zorlin.rustup
   # We use a slightly modified role for the nvidia driver because the default one fails when installing in CUDA mode with newer drivers.
   - name: zorlin.nvidia_driver

@@ -10,7 +10,3 @@ galaxy_info:
 
 dependencies:
   - name: "zorlin.fil_boost"
-  - name: "geerlingguy.nodejs"
-  - name: "gantsign.golang"
-  - name: "hurricanehrndz.rustup"
-    rustup_user: "{{ boost_user }}"

@@ -1,10 +1,10 @@
 ---
-- name: Deploy Lotus
-  hosts: lotus_primary
-  become: true
+# - name: Deploy Lotus
+#   hosts: lotus_primary
+#   become: true
 
-  roles:
-    - zorlin.lotus_daemon
+#   roles:
+#     - zorlin.lotus_daemon
 
 - name: Deploy Lotus Miner
   hosts: lotus_miner
@@ -14,12 +14,30 @@
     - zorlin.lotus_miner
     - { role: zorlin.nvidia_driver, when: install_nvidia_driver | bool }
 
+- name: Clear variables related to rustup role
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Clear rustup variables
+      set_fact:
+        rustup_shell_rc_settings_file: ""
+
 - name: Deploy Boost
   hosts: boost
   become: true
 
   roles:
     - zorlin.fil_boostd
+
+# - name: Debug
+#   hosts: boost
+#   become: true
+
+#   tasks:
+#   - name: Print Rust info
+#     debug:
+#       msg: "Debug now"
 
 - name: Collect Boost information necessary for next stages
   hosts: boost
@@ -55,6 +73,9 @@
 - name: Deploy Booster HTTP and Nginx
   hosts: booster_http
   become: true
+
+  vars:
+    rustup_user: "{{ boost_user }}"
 
   roles:
     - zorlin.fil_booster_http

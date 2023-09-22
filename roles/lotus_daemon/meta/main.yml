@@ -52,6 +52,6 @@ dependencies:
   - name: "zorlin.fil_lotus"
   - name: "geerlingguy.nodejs"
   - name: "gantsign.golang"
-  - name: "hurricanehrndz.rustup"
+  - name: "zorlin.rustup"
     rustup_user: "{{ lotus_user }}"
 #  - name: "nvidia.nvidia_driver"

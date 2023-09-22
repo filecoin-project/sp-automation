@@ -2,4 +2,4 @@
 roles:
   - name: geerlingguy.nodejs
   - name: gantsign.golang
-  - name: hurricanehrndz.rustup
+  - name: zorlin.rustup
