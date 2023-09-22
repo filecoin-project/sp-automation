@@ -49,7 +49,7 @@
 
 - name: Build Boost
   ansible.builtin.shell:
-    cmd: "source /etc/profile.d/golang.sh ; source {{ lotus_user_details.home }}/.cargo/env ; make clean {% if not use_calibrationnet %}build{% else %}calibnet{% endif %}"
+    cmd: "source /etc/profile.d/golang.sh ; source {{ boost_user_details.home }}/.cargo/env ; make clean {% if not use_calibrationnet %}build{% else %}calibnet{% endif %}"
     chdir: "{{ boost_build_dir }}/boost"
     creates: "{{ boost_build_dir }}/boost/boostd"
     executable: /bin/bash
@@ -61,5 +61,6 @@
   ansible.builtin.make:
     chdir: "{{ boost_build_dir }}/boost"
     target: install
+  register: install_boost
   become: true
   when: build_boost.changed

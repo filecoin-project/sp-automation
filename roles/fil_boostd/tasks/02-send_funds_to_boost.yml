@@ -1,6 +1,6 @@
 ---
 - name: Get wallet balances
-  include_tasks: 03a-get_wallet_balances.yml
+  include_tasks: 02a-get_wallet_balances.yml
 
 # We transfer funds if the balance of either wallet is below {{ boost_wallet_fund_threshold }} FIL.
 - name: Transfer funds to deals wallet
@@ -20,4 +20,4 @@
 # We loop until both balances have at least {{ wallet_fund_threshold }} FIL.
 - name: "Waiting for both wallets to be funded with at least {{ boost_wallet_fund_threshold }} FIL"
   when: "deals_wallet_balance | float < boost_wallet_fund_threshold or collateral_wallet_balance | float < boost_wallet_fund_threshold"
-  include_tasks: 03b-wait_for_wallet_funding.yml
+  include_tasks: 02b-wait_for_wallet_funding.yml

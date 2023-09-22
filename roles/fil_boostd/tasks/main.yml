@@ -1,0 +1,79 @@
+---
+# tasks file for fil_boost
+- name: Create Boost system group
+  ansible.builtin.group:
+    name: "{{ boost_group }}"
+    system: true
+    state: present
+
+- name: Create Boost system user
+  ansible.builtin.user:
+    name: "{{ boost_user }}"
+    comment: "Lotus Daemon User"
+    shell: /bin/bash
+    system: true
+    createhome: true
+    group: "{{ boost_group }}"
+    groups: "sudo,adm"
+    append: true
+
+- name: Get and detect information about the Boost user
+  ansible.builtin.user:
+    name: "{{ boost_user }}"
+    state: present
+  check_mode: true
+  register: boost_user_details
+
+- name: Get and detect information about the Lotus user
+  ansible.builtin.user:
+    name: "{{ lotus_user }}"
+    state: present
+  check_mode: true
+  register: lotus_user_details
+
+- name: Ensure the Boost directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ boost_user }}"
+    group: "{{ boost_group }}"
+    mode: '0750'
+  with_items:
+    - "{{ boost_client_repo }}"
+    - "{{ boost_bitswap_repo }}"
+    - "{{ boost_path }}"
+    - "{{ boost_config_path }}"
+    - "{{ boost_log_dir }}"
+
+- name: Create Boost wallets
+  include_tasks: 01-create_boost_wallets.yml
+  when: not smoketest
+
+- name: Send funds to Boost
+  include_tasks: 02-send_funds_to_boost.yml
+  when: not smoketest
+
+- name: Set Boost control wallet
+  include_tasks: 03-set_boost_control_wallet.yml
+  when: not smoketest
+
+- name: Create YugabyteDB user and database
+  include_tasks: 04-create_yugabyte_user.yml
+
+- name: Configure and start boostd-data service
+  include_tasks: 05-boostd_data_service.yml
+
+- name: Initialise Boost repository
+  include_tasks: 06-initialise_boost_repository.yml
+
+- name: Set limits
+  include_tasks: 07-set_limits.yml
+
+- name: Configure Boost LibP2P and networking options
+  include_tasks: 08-configure_boost_networking.yml
+
+- name: Configure and start boostd main service
+  include_tasks: 09-boostd_main_service.yml
+
+# - name: Print success messages!
+#   include_tasks: 12-final_preflight.yml

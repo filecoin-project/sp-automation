@@ -38,18 +38,11 @@
     - "{{ boost_config_path }}"
     - "{{ boost_log_dir }}"
 
-# Prerequisites
-- name: Install prerequisites
-  include_tasks: 01-install_prerequisites.yml
-
-- name: Build Boost
-  include_tasks: 02-build_boost.yml
-
 - name: Set limits
-  include_tasks: 03-set_limits.yml
+  include_tasks: 01-set_limits.yml
 
 - name: Configure booster-http
-  include_tasks: 04-configure_booster_http.yml
+  include_tasks: 02-configure_booster_http.yml
 
 - name: Install booster-http as a systemd service and start it
-  include_tasks: 05-systemd_service.yml
+  include_tasks: 03-systemd_service.yml

@@ -3,6 +3,9 @@
 boost_user: "boost"
 boost_group: "boost"
 
+# Skip wallet creation, chain sync and import and similar tasks. Just test building the software.
+smoketest: false
+
 # URL of the Boost git repository
 boost_git_repo: "https://github.com/filecoin-project/boost.git"
 
@@ -27,3 +30,7 @@ lotus_path: "{{ lotus_user_details.home }}/.lotus{% if use_calibrationnet %}_cal
 
 # Build directory for building software.
 boost_build_dir: "{{ boost_user_details.home }}/src/"
+
+# Minimum amount of FIL for a Boost wallet to be considered funded. This is used to determine if a wallet is ready to be used for Boost.
+# !! Please note - this will also be used as the amount of FIL to transfer to the Boost wallets if they are not funded.
+boost_wallet_fund_threshold: 0.2

@@ -9,7 +9,7 @@
 - name: Set gpu_detected to false if we did not find a working NVIDIA card
   ansible.builtin.set_fact:
     gpu_detected: false
-  when: nvidia_smi_output.stdout == ""
+  when: 'nvidia_smi_output.stdout is not defined or nvidia_smi_output.stdout == ""'
 
 - name: Set gpu_detected if we found a working NVIDIA card
   ansible.builtin.set_fact:

@@ -19,7 +19,7 @@
   become: true
 
   roles:
-    - zorlin.fil_boost
+    - zorlin.fil_boostd
 
 - name: Collect Boost information necessary for next stages
   hosts: boost

@@ -7,6 +7,13 @@
     group: root
     mode: '0644'
 
+- name: If we installed a new version of Boost, use a handler to restart booster-http
+  ansible.builtin.command:
+    cmd: /bin/true
+  changed_when: true
+  notify: Restart booster-http
+  when: install_boost.changed
+
 - name: Start and enable booster-http
   ansible.builtin.systemd:
     name: booster-http

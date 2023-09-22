@@ -15,6 +15,13 @@
     mode: '0640'
   notify: Reload systemd
 
+- name: If we installed a new version of Boost, use a handler to restart boostd
+  ansible.builtin.command:
+    cmd: /bin/true
+  changed_when: true
+  notify: Restart boostd
+  when: install_boost.changed
+
 # Flush handlers
 - name: Flush handlers to reload systemd if necessary
   meta: flush_handlers
