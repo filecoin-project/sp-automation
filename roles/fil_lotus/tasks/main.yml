@@ -1,8 +1,5 @@
 ---
 # tasks file for lotus_daemon
-- name: Create Lotus user and group
-  ansible.builtin.include_tasks: 00-lotus_user_and_group.yml
-
 - name: Install prerequisites
   ansible.builtin.include_tasks: 01-install_prerequisites.yml
 

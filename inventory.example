@@ -7,6 +7,11 @@ localhost
 [lotus_worker]
 localhost
 
+[lotus:children]
+lotus_primary
+lotus_miner
+lotus_worker
+
 [boost]
 localhost
 

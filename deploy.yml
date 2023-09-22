@@ -1,4 +1,12 @@
 ---
+- name: Create Lotus user and group
+  hosts: lotus
+  become: true
+
+  tasks:
+    - name: Create Lotus user and group
+      ansible.builtin.include_tasks: tasks/lotus_user_and_group.yml
+
 - name: Deploy Lotus
   hosts: lotus_primary
   become: true
