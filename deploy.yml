@@ -22,6 +22,13 @@
     - zorlin.lotus_miner
     - { role: zorlin.nvidia_driver, when: install_nvidia_driver | bool }
 
+- name: Deploy YugabyteDB
+  hosts: yugabytedb
+  become: true
+
+  roles:
+    - zorlin.yugabytedb
+
 - name: Deploy Boost
   hosts: boost
   become: true
