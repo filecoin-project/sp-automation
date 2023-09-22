@@ -28,6 +28,10 @@ cp group_vars/all.example group_vars/all && editor group_vars/all
 ```
 cp group_vars/yugabytedb.example group_vars/yugabytedb && editor group_vars/yugabytedb
 ```
+- Copy the Boost configuration - `group_vars/boost.example` to `group_vars/boost` and edit it to suit your needs.
+```
+cp group_vars/boost.example group_vars/boost && editor group_vars/boost
+```
 - If this is your first time running lotus-automation for Ansible on this machine, run the Ansible Galaxy install process.
 ```
 ansible-galaxy install -r roles/requirements.yml ; ansible-galaxy install -r collections/requirements.yml
