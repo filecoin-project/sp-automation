@@ -43,7 +43,9 @@
   ansible.builtin.command:
     cmd: "make clean"
     chdir: "{{ boost_build_dir }}/boost"
-  when: boost_version_installed != boost_version | replace('v', '')
+  when:
+    - boost_version_installed is defined
+    - boost_version_installed != boost_version | replace('v', '')
   become: true
   become_user: "{{ boost_user }}"
 
