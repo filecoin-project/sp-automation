@@ -22,7 +22,7 @@
     cmd: /bin/true
   changed_when: true
   notify: Restart boostd-data
-  when: install_boost.changed
+  when: install_boost is defined and install_boost.changed
 
 # Flush handlers
 - name: Flush handlers to reload systemd if necessary

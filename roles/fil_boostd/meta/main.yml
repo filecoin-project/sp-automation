@@ -52,4 +52,5 @@ galaxy_info:
 #   - name: "geerlingguy.nodejs"
 #   - name: "gantsign.golang"
 #   - name: "hurricanehrndz.rustup"
-#     rustup_user: "{{ lotus_user }}"
+#     rustup_user: "{{ boost_user }}"
+
