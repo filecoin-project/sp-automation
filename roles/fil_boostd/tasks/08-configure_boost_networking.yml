@@ -12,8 +12,8 @@
 
 - name: If we now have a public IPv4 address, use it
   ansible.builtin.set_fact:
-    boost_public_ip: "{{ boost_get_public_ip.content }}"
-  when: boost_public_ip is not defined and boost_get_public_ip.status == 200
+    boost_public_ip: "{{ boost_get_public_ip.stdout }}"
+  when: boost_public_ip is not defined and boost_get_public_ip.rc == 0
 
 - name: Get Boost IPv4 address using inventory introspection
   ansible.builtin.set_fact:
