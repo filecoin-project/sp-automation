@@ -4,6 +4,9 @@ localhost
 [lotus_miner]
 localhost
 
+[lotus_worker]
+localhost
+
 [boost]
 localhost
 
