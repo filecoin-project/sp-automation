@@ -43,10 +43,10 @@
   become_user: "{{ lotus_user }}"
   become: true
   environment:
-    LOTUS_PATH: "{{ lotus_path }}"
-    FIL_PROOFS_PARAMETER_CACHE: "{{ param_cache }}"
-    FIL_PROOFS_PARENT_CACHE: "{{ parent_cache }}"
-    {% if ipfs_gateway is defined %}IPFS_GATEWAY: "{{ ipfs_gateway }}/ipfs/"{% endif %}
+    - LOTUS_PATH: "{{ lotus_path }}"
+    - FIL_PROOFS_PARAMETER_CACHE: "{{ param_cache }}"
+    - FIL_PROOFS_PARENT_CACHE: "{{ parent_cache }}"
+    - "{% if ipfs_gateway is defined %}IPFS_GATEWAY: '{{ ipfs_gateway }}/ipfs/'{% endif %}"
   async: 86400 # 1 day
   poll: 5
   register: lotus_proof_download_status
