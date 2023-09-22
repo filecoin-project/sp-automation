@@ -84,8 +84,8 @@
   ansible.builtin.template:
     src: lotus-config.toml.j2
     dest: "{{ lotus_path }}/config.toml"
-    owner: lotus
-    group: lotus
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_group }}"
     backup: true
     mode: 0600
   notify: Restart Lotus daemon
