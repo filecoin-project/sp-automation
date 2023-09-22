@@ -22,6 +22,9 @@
         cmd: "set -o pipefail ; lotus net reachability | grep 'Public'"
         executable: /bin/bash
       register: libp2p_reachability
+      until: "ERROR:" not in libp2p_reachability.stdout
+      retries: 3
+      delay: 5
       environment:
         LOTUS_PATH: "{{ lotus_path }}"
       changed_when: false
