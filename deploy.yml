@@ -12,6 +12,7 @@
   become: true
 
   roles:
+    - { role: zorlin.nvidia_driver, when: install_nvidia_driver | bool }
     - zorlin.lotus_daemon
 
 - name: Deploy Lotus Miner
