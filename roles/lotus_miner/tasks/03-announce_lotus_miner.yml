@@ -36,7 +36,6 @@
   ansible.builtin.assert:
     that:
       - lotus_miner_api_token is defined
-      - lotus_miner_api_token.stdout is not defined
     fail_msg: "We were unable to read the Lotus Miner API token from {{ lotus_miner_api_token_file }}. Please check the file exists and is readable by the lotus user."
 
 # Get our public IP address if we haven't grabbed it already earlier in a play
