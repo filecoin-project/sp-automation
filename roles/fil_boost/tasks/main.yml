@@ -1,21 +1,21 @@
 ---
 # tasks file for fil_boost
-- name: Create Boost system group
-  ansible.builtin.group:
-    name: "{{ boost_group }}"
-    system: true
-    state: present
+# - name: Create Boost system group
+#   ansible.builtin.group:
+#     name: "{{ boost_group }}"
+#     system: true
+#     state: present
 
-- name: Create Boost system user
-  ansible.builtin.user:
-    name: "{{ boost_user }}"
-    comment: "Lotus Daemon User"
-    shell: /bin/bash
-    system: true
-    createhome: true
-    group: "{{ boost_group }}"
-    groups: "sudo,adm"
-    append: true
+# - name: Create Boost system user
+#   ansible.builtin.user:
+#     name: "{{ boost_user }}"
+#     comment: "Boost Daemon User"
+#     shell: /bin/bash
+#     system: true
+#     createhome: true
+#     group: "{{ boost_group }}"
+#     groups: "sudo,adm"
+#     append: true
 
 - name: Get and detect information about the Boost user
   ansible.builtin.user:

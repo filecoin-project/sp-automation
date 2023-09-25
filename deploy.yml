@@ -7,6 +7,14 @@
     - name: Create Lotus user and group
       ansible.builtin.include_tasks: tasks/lotus_user_and_group.yml
 
+- name: Create Boost user and group
+  hosts: boost
+  become: true
+
+  tasks:
+    - name: Create Boost user and group
+      ansible.builtin.include_tasks: tasks/boost_user_and_group.yml
+
 - name: Deploy Lotus
   hosts: lotus_primary
   become: true
