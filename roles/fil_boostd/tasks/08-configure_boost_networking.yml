@@ -8,6 +8,7 @@
   retries: 3
   delay: 3
   when: boost_public_ip is not defined
+  changed_when: false
   check_mode: false
 
 - name: If we now have a public IPv4 address, use it

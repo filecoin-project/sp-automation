@@ -9,7 +9,7 @@
 - name: Create Boost system user
   ansible.builtin.user:
     name: "{{ boost_user }}"
-    comment: "Lotus Daemon User"
+    comment: "Boost Daemon User"
     shell: /bin/bash
     system: true
     createhome: true

@@ -9,7 +9,7 @@
 - name: Determine if Certbot is managing anything yet - look for "managed by Certbot" and set a fact if found
   ansible.builtin.set_fact:
     managed_by_certbot: true
-  when: "'# managed by Certbot' in (sp_stack_nginx_content['content'] | b64decode)"
+  when: "'# managed by Certbot' in (sp_stack_nginx_content['content'] | default('') | b64decode)"
 
 - name: Create a site-available file for nginx
   ansible.builtin.template:
