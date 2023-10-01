@@ -36,3 +36,12 @@
     state: started
     enabled: true
   become: true
+
+- name: Wait for Lotus daemon to be reachable
+  wait_for:
+    host: localhost
+    port: "{{ lotus_daemon_port }}"
+    delay: 5
+    timeout: 300
+  become: true
+  become_user: "{{ lotus_user }}"
