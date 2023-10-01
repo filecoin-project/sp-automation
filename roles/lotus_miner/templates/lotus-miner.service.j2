@@ -16,8 +16,7 @@ ExecStart=/usr/local/bin/lotus-miner --miner-repo {{ lotus_miner_path }} run
 Restart=on-failure
 RestartSec=10
 
-StandardOutput=append:{{ log_dir }}/lotusminer.log
-StandardError=append:{{ log_dir }}/lotusminer.log
+SyslogIdentifier={{ lotus_user }}
 
 [Install]
 WantedBy=multi-user.target
