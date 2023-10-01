@@ -84,6 +84,7 @@
   environment:
     LOTUS_PATH: "{{ lotus_path }}"
     LOTUS_MINER_PATH: "{{ lotus_miner_path }}"
+    MINER_API_INFO: "{{ lotus_miner_api_token }}:/ip4/{{ lotus_miner_ip }}/tcp/{{ lotus_miner_port }}/http"
   become_user: "{{ lotus_user }}"
   become: true
   register: lotus_announcement
