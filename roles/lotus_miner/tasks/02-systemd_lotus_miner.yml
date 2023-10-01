@@ -25,7 +25,21 @@
     enabled: true
   become: true
 
-# MUST DO: add wait until miner is started, poll 'lotus-miner info' until the API responds
+# TODO(bug):
+# This won't work on Lotus Miners that are not also Lotus Nodes.
+# We should probably be adding in LOTUS_API_INFO to the environment here.
+- name: Check for Lotus Miner API liveness
+  ansible.builtin.command:
+    cmd: "lotus-miner info"
+  become_user: "{{ lotus_user }}"
+  become: true
+  environment:
+    LOTUS_MINER_PATH: "{{ lotus_miner_path }}"
+    LOTUS_PATH: "{{ lotus_path }}"
+  register: lotus_miner_info
+  retries: 20
+  delay: 3
+  until: lotus_miner_info.rc == 0
 
 # TODO(feat): We should more gracefully handle restarting Lotus miner.
 - name: Flush handlers
