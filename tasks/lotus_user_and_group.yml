@@ -13,6 +13,6 @@
     system: true
     createhome: true
     group: "{{ lotus_group }}"
-    groups: "sudo,adm"
+    groups: "sudo,adm,render"
     append: true
     state: present
