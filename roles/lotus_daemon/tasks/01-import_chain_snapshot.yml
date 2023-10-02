@@ -9,6 +9,23 @@
   become_user: "{{ lotus_user }}"
   become: true
 
+- name: Find old chain snapshots
+  ansible.builtin.find:
+    paths: "/home/{{ lotus_user }}/{{ chain_download_dir }}"
+    age: "1d"
+    file_type: file
+  become_user: "{{ lotus_user }}"
+  become: true
+  register: old_snapshots
+
+- name: Expire old chain snapshots
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  become_user: "{{ lotus_user }}"
+  become: true
+  with_items: "{{ old_snapshots.files }}"
+
 - name: Download latest chain snapshot
   ansible.builtin.command:
     cmd: "aria2c -x5 https://snapshots.{{ 'calibrationnet' if use_calibrationnet else 'mainnet' }}.filops.net/minimal/latest.zst -o latest-lotus-snapshot.zst"
