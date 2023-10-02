@@ -9,4 +9,4 @@ roles:
   - name: zorlin.rustup
   # We use a slightly modified role for the nvidia driver because the default one fails when installing in CUDA mode with newer drivers.
   - name: zorlin.nvidia_driver
-  - name: frzk.chrony
+  - name: alvistack.chrony

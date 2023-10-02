@@ -26,7 +26,7 @@
 
   roles:
     - zorlin.yugabytedb
-    - frzk.chrony
+    - alvistack.chrony
 
 - name: Deploy Lotus
   hosts: lotus_miner
