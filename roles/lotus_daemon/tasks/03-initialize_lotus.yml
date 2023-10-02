@@ -89,3 +89,17 @@
 
 - name: Flush handlers to ensure Lotus is restarted if needed
   ansible.builtin.meta: flush_handlers
+
+- name: Set fullnode_api_info in .bashrc
+  ansible.builtin.lineinfile:
+    path: "{{ lotus_user_details.home }}/.bashrc"
+    line: "export FULLNODE_API_INFO=$(cat {{ lotus_api_token_file }}:/ip4/{{ hostvars[groups['lotus_primary'][0]]['ansible_' + lotusd_bind_interface]['ipv4']['address'] }}/tcp/{{ lotus_daemon_port }}"
+    state: present
+    create: true
+    owner: "{{ lotus_user }}"
+    group: "{{ lotus_user }}"
+    mode: 0644
+    # TODO(decision) We probably want MINER_API_INFO to only be available to interactive shells.
+    # If we change our mind on that later, uncomment the following line.
+    #insertbefore: "# If not running interactively, don't do anything"
+  when: lotus_api_token is defined
