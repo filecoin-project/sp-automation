@@ -1,0 +1,13 @@
+---
+# handlers file for lotus_miner
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Restart Lotus worker
+  ansible.builtin.systemd:
+    name: "lotus-worker@{{ item.name }}"
+    state: restarted
+    enabled: true
+  loop: "{{ lotus_workers }}"
+  become: true

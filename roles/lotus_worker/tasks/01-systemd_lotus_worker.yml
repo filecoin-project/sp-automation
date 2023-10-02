@@ -1,0 +1,50 @@
+---
+- name: Configure Lotus Workers
+  ansible.builtin.template:
+    src: lotus-worker.env.j2
+    dest: "/etc/default/lotus-worker-{{ item.name }}"
+    owner: root
+    group: root
+    mode: 0644
+    backup: true
+  loop: "{{ lotus_workers }}"
+  notify:
+    - Reload systemd
+    - Restart Lotus worker
+  become: true
+  vars:
+    lotus_worker_name: "{{ item.name }}"
+    extra_flags: "{{ item.extra_flags }}"
+    local_storage: "{{ item.local_storage }}"
+    roles: "{{ item.roles }}"
+
+- name: Install systemd unit file for Lotus Worker
+  ansible.builtin.template:
+    src: lotus-worker@.service.j2
+    dest: /etc/systemd/system/lotus-worker@.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Reload systemd
+    - Restart Lotus worker
+
+- name: If we installed a new version of Lotus, use a handler to restart it
+  ansible.builtin.command:
+    cmd: /bin/true
+  changed_when: true
+  check_mode: false
+  notify: Restart Lotus worker
+  when: new_lotus_version_installed.changed
+
+- name: Ensure Lotus Worker is started
+  ansible.builtin.systemd:
+    name: "lotus-worker@{{ item.name }}"
+    state: started
+    enabled: true
+  loop: "{{ lotus_workers }}"
+  become: true
+
+# TODO(feat): We should more gracefully handle restarting Lotus worker.
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers

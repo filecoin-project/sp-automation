@@ -1,0 +1,46 @@
+---
+# defaults file for lotus_worker
+lotus_user: lotus
+lotus_group: lotus
+create_lotus_system_user: true
+
+# URL of the Lotus git repository
+lotus_git_repo: "https://github.com/filecoin-project/lotus.git"
+
+# Check which version of Lotus matches with which version of Boost and Go: https://boost.filecoin.io/getting-started
+# Then set them appropriately in your playbook or group_vars.
+lotus_version: "v1.23.3"
+golang_version: "1.20.7"
+boost_version: "v2.0.0"
+
+# Build Lotus for Calibration testnet instead of mainnet: true / false
+# if "true", use the Faucet to give your wallets test FIL: https://faucet.calibration.fildev.network/
+use_calibrationnet: true
+
+# Port for Lotus Daemon to run on
+lotus_daemon_port: 1234
+
+# Port for libp2p host to run on
+lotus_libp2p_port: 6665
+
+# The sector size you want for your miner: choose from 32GiB / 64GiB
+sector_size: "32GiB"
+
+# Location for the Lotus log file(s)
+log_dir: "/var/log/lotus"
+
+# Build directory for building software. Originally "${INSTALL_DIR}".
+build_dir: "/usr/local/src/"
+
+# Location for the miner proof cache. This needs to be fast storage, ideally NVMe, and requires ca.150GiB.
+param_cache: "/opt/cache/param_cache"
+parent_cache: "/opt/cache/parent_cache"
+
+# Base path to use for workers. Each worker will use this path with _workername appended.
+lotus_worker_path: "{{ lotus_user_details.home }}/.lotusworker{% if use_calibrationnet %}_calibnet{% endif %}"
+
+# Location for lotus' chain and data repository. The chain is stored under lotus_path. This requires fast storage (SSD or NVMe).
+lotus_path: "{{ lotus_user_details.home }}/.lotus{% if use_calibrationnet %}_calibnet{% endif %}"
+
+# Skip wallet creation, chain sync and import and similar tasks. Just test building the software.
+smoketest: false

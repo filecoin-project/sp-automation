@@ -7,6 +7,21 @@ lotus_group: lotus
 boost_user: boost
 boost_group: boost
 
+# Default Lotus workers. Use host_vars/hostname to set these per-machine.
+lotus_workers:
+  - name: sealing_worker
+    extra_flags: []
+    local_storage: false
+    roles: ["addpiece", "precommit1", "unseal", "precommit2", "commit", "replica-update", "prove-replica-update2", "regen-sector-key"]
+  - name: wp_worker
+    extra_flags: []
+    local_storage: false
+    roles: ["windowpost"]
+  - name: win_worker
+    extra_flags: []
+    local_storage: false
+    roles: ["winningpost"]
+
 # Certbot email - used to automatically generate SSL certificates for Booster HTTP
 # You MUST change this, or you will get an error when running the playbook.
 certbot_email: hello@filecoin.io
@@ -24,6 +39,8 @@ sp_domain: "subdomain.your.miner.domain"
 # Defaults to ~/.lotus, ~/.lotusminer respectively (with "_calibnet" appended if use_calibrationnet is true).
 lotus_path: "{{ lotus_user_details.home }}/.lotus{% if use_calibrationnet %}_calibnet{% endif %}"
 lotus_miner_path: "{{ lotus_user_details.home }}/.lotusminer{% if use_calibrationnet %}_calibnet{% endif %}"
+# Base path to use for workers. Each worker will use this path with _workername appended.
+lotus_worker_path: "{{ lotus_user_details.home }}/.lotusworker{% if use_calibrationnet %}_calibnet{% endif %}"
 
 # Location for boost.
 # Defaults to ~/.boost (with "_calibnet" appended if use_calibrationnet is true).

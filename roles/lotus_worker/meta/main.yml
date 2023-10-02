@@ -1,0 +1,10 @@
+galaxy_info:
+  author: Filecoin Project
+  namespace: zorlin
+  description: Install and configure a Lotus worker for running a Filecoin Storage Provider (SP) and earning Filecoin
+  company: Protocol Labs
+  license: MIT
+  min_ansible_version: "2.12"
+
+dependencies:
+  - name: "zorlin.fil_lotus"

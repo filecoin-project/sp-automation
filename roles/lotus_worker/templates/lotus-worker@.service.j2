@@ -1,0 +1,18 @@
+[Unit]
+Description=Lotus Worker
+After=lotus-daemon.service
+Requires=network-online.target
+
+[Service]
+Environment="GOLOG_FILE={{ log_dir }}/lotusworker-%i.log"
+EnvironmentFile=/etc/default/lotus-worker-%i
+User={{ lotus_user }}
+Group={{ lotus_user }}
+ExecStart=/usr/local/bin/lotus-worker --worker-repo {{ lotus_worker_path }}_%i/ --miner-repo {{ lotus_miner_path }} run $LOTUS_WORKER_ROLES $LOTUS_WORKER_EXTRA_FLAGS --no-default
+Restart=on-failure
+RestartSec=10
+
+SyslogIdentifier={{ lotus_user }}
+
+[Install]
+WantedBy=multi-user.target

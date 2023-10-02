@@ -12,5 +12,6 @@ roles/fil_lotus/fil_lotus
 roles/lotus_boost_actors/lotus_boost_actors
 roles/lotus_daemon/lotus_daemon
 roles/lotus_miner/lotus_miner
+roles/lotus_worker/lotus_worker
 roles/yugabytedb/yugabytedb
 ansible.cfg
