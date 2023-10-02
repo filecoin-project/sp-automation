@@ -19,12 +19,6 @@
     boost_yugabytedb: "{{ ansible_local.boost_yugabytedb.database }}"
   when: boost_yugabytedb_facts_available is defined and boost_yugabytedb_facts_available
 
-- name: Set host for PostgreSQL if not yet available as a fact
-  ansible.builtin.set_fact:
-    # We combine our existing boost_yugabytedb dictionary, in whatever form it exists in, with a new dictionary containing the host IP address of the first YugabyteDB TServer host in the inventory.
-    boost_yugabytedb: "{{ boost_yugabytedb | default({}) | combine({'host': hostvars[groups['yugabytedb_tserver'][0]]['ansible_' + yugabyte_bind_interface]['ipv4']['address']}, recursive=True) }}"
-  when: boost_yugabytedb.host is not defined
-
 - name: If we are generating facts for the first time, create a Boost password for YugabyteDB as well as other needed facts
   ansible.builtin.set_fact:
     boost_yugabytedb:
@@ -33,6 +27,12 @@
       database: "boostdb"
       port: 5433
   when: boost_yugabytedb.password is not defined
+
+- name: Set host for PostgreSQL if not yet available as a fact
+  ansible.builtin.set_fact:
+    # We combine our existing boost_yugabytedb dictionary, in whatever form it exists in, with a new dictionary containing the host IP address of the first YugabyteDB TServer host in the inventory.
+    boost_yugabytedb: "{{ boost_yugabytedb | default({}) | combine({'host': hostvars[groups['yugabytedb_tserver'][0]]['ansible_' + yugabyte_bind_interface]['ipv4']['address']}, recursive=True) }}"
+  when: boost_yugabytedb.host is not defined
 
 - name: Store our Boost YugabyteDB facts
   ansible.builtin.template:
