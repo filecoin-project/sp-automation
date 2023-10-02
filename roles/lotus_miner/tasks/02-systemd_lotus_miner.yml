@@ -25,27 +25,36 @@
     enabled: true
   become: true
 
-- name: Print details
-  ansible.builtin.debug:
-    msg:
-      - "{{ lotus_miner_path }}"
-      - "{{ lotus_path }}"
+- name: Retrieve Lotus auth token
+  ansible.builtin.command:
+    cmd: "cat {{ lotus_user_details.home }}/.lotus{% if use_calibrationnet %}_calibnet{% endif %}/token"
+  register: lotus_auth_token
+  changed_when: false
+  check_mode: false
+  become: true
+  become_user: "{{ lotus_user }}"
+  delegate_to: "{{ groups['lotus_primary'][0] }}"
 
-# TODO(bug):
-# This won't work on Lotus Miners that are not also Lotus Nodes.
-# We should probably be adding in LOTUS_API_INFO to the environment here.
+- name: Set Lotus auth token
+  ansible.builtin.set_fact:
+    lotus_auth_token: "{{ hostvars[groups['lotus_primary'][0]]['lotus_auth_token']['stdout'] }}"
+  changed_when: false
+  check_mode: false
+
 - name: Check for Lotus Miner API liveness
   ansible.builtin.shell:
     cmd: "lotus-miner info"
   environment:
     LOTUS_MINER_PATH: "{{ lotus_miner_path }}"
     LOTUS_PATH: "{{ lotus_path }}"
+    FULLNODE_API_INFO: "{{ lotus_auth_token }}:/ip4/{{ hostvars[groups['lotus_primary'][0]]['ansible_' + lotusd_bind_interface]['ipv4']['address'] }}/tcp/{{ lotus_daemon_port }}"
   register: lotus_miner_info
-  retries: 20
-  delay: 3
+  retries: 30
+  delay: 5
   until: lotus_miner_info.rc == 0
   become_user: "{{ lotus_user }}"
   become: true
+  ignore_errors: true
 
 # TODO(feat): We should more gracefully handle restarting Lotus miner.
 - name: Flush handlers
