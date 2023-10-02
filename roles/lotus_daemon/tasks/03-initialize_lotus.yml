@@ -23,13 +23,6 @@
   become: true
   become_user: "{{ lotus_user }}"
 
-- name: Wait for Lotus API to be available
-  ansible.builtin.wait_for:
-    host: localhost
-    port: "{{ lotus_libp2p_port }}"
-    delay: 5
-    timeout: 30
-
 - name: Create API token if we don't have one or if we have an invalid one
   # We run all these tasks if we are unable to find a seemingly valid API token.
   when:
