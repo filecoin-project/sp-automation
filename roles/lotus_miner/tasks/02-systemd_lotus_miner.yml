@@ -55,6 +55,7 @@
   become_user: "{{ lotus_user }}"
   become: true
   ignore_errors: true
+  changed_when: false
 
 # TODO(feat): We should more gracefully handle restarting Lotus miner.
 - name: Flush handlers
