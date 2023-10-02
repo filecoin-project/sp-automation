@@ -57,6 +57,15 @@
     lotus_public_ip: "{{ public_ipv4.content }}"
   when: lotus_public_ip is not defined and public_ipv4.status == 200
 
+- name: Check that the Lotus Miner is publicly reachable
+  ansible.builtin.wait_for:
+    host: "{{ lotus_miner_ip }}"
+    port: "{{ lotus_miner_port }}"
+    delay: 5
+    timeout: 300
+  become: true
+  become_user: "{{ lotus_user }}"
+
 # Announce the miner
 - name: Print a message about announcing the miner
   ansible.builtin.debug:
