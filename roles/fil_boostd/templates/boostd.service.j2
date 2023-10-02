@@ -10,8 +10,8 @@ EnvironmentFile={{ boost_config_path }}/boostd.env
 Restart=on-failure
 RestartSec=3s
 ExecStart=/usr/local/bin/boostd run
-StandardOutput=append:{{ boost_log_dir }}/boostd.log
-StandardError=append:{{ boost_log_dir }}/boostd.log
+
+SyslogIdentifier={{ boost_user }}
 
 [Install]
 WantedBy=multi-user.target
