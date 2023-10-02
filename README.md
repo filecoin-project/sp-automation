@@ -8,6 +8,11 @@ This is an experimental port of lotus-automation to Ansible.
 - Passwordless sudo enabled on your Lotus node (alternatively, add the flags --become and --ask-become-pass when running ansible-playbook)
 - If you are using Secure Boot on your Lotus node, please read [the note on Secure Boot](#note-on-secure-boot).
 
+## Upgrading
+Once we have begun publishing releases for SP Automation, please read the release notes *every time you upgrade!* 
+
+We may release breaking changes over time you need to be aware of, and your group_vars/ files in particular may need changes over time to keep up with the playbook.
+
 ## Usage
 - Clone this repository and `cd` into it
 ```
