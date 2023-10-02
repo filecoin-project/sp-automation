@@ -2,8 +2,8 @@
 This is an experimental port of lotus-automation to Ansible.
 
 ## Requirements
-- A modern version of Ansible and Python3 (a specific minimum version will be specified at a later date).
-  On Ubuntu, install `ansible-core` from the standard apt repositories.
+- Ansible (2.12 or newer)
+- Python3 (3.9 or newer)
 - All requirements specified in the [SP-automation README](../README.md#requirements).
 - Passwordless sudo enabled on your Lotus node (alternatively, add the flags --become and --ask-become-pass when running ansible-playbook)
 - If you are using Secure Boot on your Lotus node, please read [the note on Secure Boot](#note-on-secure-boot).
@@ -37,7 +37,7 @@ cp group_vars/boost.example group_vars/boost && editor group_vars/boost
 ```
 ansible-galaxy install -r roles/requirements.yml ; ansible-galaxy install -r collections/requirements.yml
 ```
-- Now run the playbook and deploy your Lotus node. (Note: If any of your nodes do not have **passwordless sudo** enabled, add --ask-become-pass to the command below)
+- Now run the playbook and deploy your Storage Provider. (Note: If any of your nodes do not have **passwordless sudo** enabled, add --ask-become-pass to the command below)
 ```
 ansible-playbook deploy.yml
 ```
@@ -56,10 +56,4 @@ If you are using Ubuntu with Secure Boot enabled (likely if you are on a modern 
 If you run into this, please run `sudo dpkg-reconfigure nvidia-dkms-525-server` (replacing 525 with your driver version - for example, 515 on Ubuntu 20.04) and follow the steps, then reboot and select "Enroll MOK", then reboot one last time, then re-run the playbook.
 
 ### Wallet management
-This Ansible playbook will attempt rudimentary wallet management for you. This depends on the owner wallet being in position #0 in `lotus wallet list`, and the worker wallet being in position #1. Please let us know if you have special requirements that conflict with this, and we'll help you work around this dependency.
-
-If you are deploying Boost, this will also depend on the storage deals wallet being in position #2 and the collateral wallet being in position #3.
-
-### General notes
-- This is a work in progress and is not yet ready for use.
-- Ansible Molecule + Podman is to be used for testing and developing the individual roles.
+This Ansible playbook will perform basic wallet management for you. This utilises Ansible facts (via `facts.d` in `/etc/ansible/facts.d`) and is still undergoing improvements.
