@@ -38,7 +38,7 @@
   become: true
 
 - name: Wait for Lotus daemon to be reachable
-  wait_for:
+  ansible.builtin.wait_for:
     host: localhost
     port: "{{ lotus_daemon_port }}"
     delay: 5
