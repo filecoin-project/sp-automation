@@ -35,7 +35,7 @@
   when: boost_version_output.stdout is defined and boost_version_installed is defined
 
 - name: Print our detected Boost version string
-  debug:
+  ansible.builtin.debug:
     msg: "Detected Boost version: {{ boost_version_installed }}"
   when: boost_version_installed is defined
 

@@ -5,13 +5,13 @@
   Timeout = "30s"
 
 [Storage]
-  AllowAddPiece = {{ "true" if debug_sealing_on_miner else "false" }}
-  AllowPreCommit1 = {{ "true" if debug_sealing_on_miner else "false" }}
-  AllowPreCommit2 = {{ "true" if debug_sealing_on_miner else "false" }}
-  AllowCommit = {{ "true" if debug_sealing_on_miner else "false" }}
-  AllowUnseal = {{ "true" if debug_sealing_on_miner else "false" }}
-  AllowReplicaUpdate = {{ "true" if debug_sealing_on_miner else "false" }}
-  AllowProveReplicaUpdate2 = {{ "true" if debug_sealing_on_miner else "false" }}
+  AllowAddPiece = false
+  AllowPreCommit1 = false
+  AllowPreCommit2 = false
+  AllowCommit = false
+  AllowUnseal = false
+  AllowReplicaUpdate = false
+  AllowProveReplicaUpdate2 = false
 
 [Sealing]
   CollateralFromMinerBalance = true
