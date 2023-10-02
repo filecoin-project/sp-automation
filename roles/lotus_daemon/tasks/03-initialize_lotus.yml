@@ -93,7 +93,7 @@
 - name: Set fullnode_api_info in .bashrc
   ansible.builtin.lineinfile:
     path: "{{ lotus_user_details.home }}/.bashrc"
-    line: "export FULLNODE_API_INFO=$(cat {{ lotus_api_token_file }}:/ip4/{{ hostvars[groups['lotus_primary'][0]]['ansible_' + lotusd_bind_interface]['ipv4']['address'] }}/tcp/{{ lotus_daemon_port }}"
+    line: "export FULLNODE_API_INFO=$(cat {{ lotus_api_token_file }}):/ip4/{{ hostvars[groups['lotus_primary'][0]]['ansible_' + lotusd_bind_interface]['ipv4']['address'] }}/tcp/{{ lotus_daemon_port }}"
     state: present
     create: true
     owner: "{{ lotus_user }}"
