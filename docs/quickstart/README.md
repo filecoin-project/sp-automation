@@ -6,7 +6,7 @@ It's based on the v0.1.0 release of the Stack. If newer versions have come out s
 
 ## Getting started
 
-Generally speaking, follow the README's directions to get your environment and required dependencies set up. This guide will give you a bit more detail.
+Generally speaking, follow the [README](https://github.com/filecoin-project/sp-automation/blob/main/README.md)'s directions to get your environment and required dependencies set up. This guide will give you a bit more detail.
 
 ### Setting your settings!
 
