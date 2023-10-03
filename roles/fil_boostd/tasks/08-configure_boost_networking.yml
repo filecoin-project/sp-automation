@@ -1,5 +1,4 @@
 ---
-# TODO(bug): This does not gracefully handle a dual stack machine. In this case, it may respond with an IPv6 address instead of IPv4.
 - name: Get public IPv4 address using ifconfig.me
   ansible.builtin.command:
     cmd: "curl -4 https://ifconfig.me"
