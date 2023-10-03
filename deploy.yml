@@ -31,6 +31,14 @@
     - { role: zorlin.nvidia_driver, when: install_nvidia_driver | bool }
     - zorlin.lotus_miner
 
+- name: Deploy Lotus Worker
+  hosts: lotus_worker
+  become: true
+
+  roles:
+    - { role: zorlin.nvidia_driver, when: install_nvidia_driver | bool }
+    - zorlin.lotus_worker
+
 - name: Deploy YugabyteDB
   hosts: yugabytedb
   become: true
