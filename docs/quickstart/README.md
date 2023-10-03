@@ -75,7 +75,7 @@ You may find it useful to speed up this process for future Lotus nodes by settin
 
 Finally, the playbook will ask you for a list of storage paths, separated by commas.
 
-![Setting storage paths for a Filecoin miner](stoarge-paths.png)
+![Setting storage paths for a Filecoin miner](storage-paths.png)
 
 These will be for storing your **sealed sectors** and should be on reliable, fault-tolerant storage such as a ZFS pool, CephFS or MooseFS filesystem.
 
