@@ -9,7 +9,7 @@ At the moment the SP Automation Stack is targeting new and small-sized SPs, as w
 - Ansible (2.12 or newer)
 - Python3 (3.9 or newer)
 - Passwordless sudo enabled on your Lotus node (alternatively, add the flags --become and --ask-become-pass when running ansible-playbook)
-- If you are using Secure Boot on your Lotus node, please read [the note on Secure Boot](#note-on-secure-boot).
+- If you are using Secure Boot on your Lotus node, please read [the note on Secure Boot](#nvidia-support-and-secure-boot).
 
 ## Upgrading
 Once we have begun publishing releases for SP Automation, please read the release notes *every time you upgrade!* 
