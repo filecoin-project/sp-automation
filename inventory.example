@@ -21,6 +21,9 @@ localhost
 [booster_http]
 localhost
 
+[booster_bitswap]
+localhost
+
 [yugabytedb]
 localhost
 

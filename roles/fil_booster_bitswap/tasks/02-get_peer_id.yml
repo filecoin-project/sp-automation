@@ -1,0 +1,17 @@
+---
+# Note: It's actually safe to run init over and over as long as libp2p.key is not deleted.
+# We should request a proper "booster-bitswap peer id" command from the Boost developers later.
+- name: Get Booster Bitswap Peer ID
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/booster-bitswap init"
+    chdir: "{{ booster_bitswap_repo }}"
+  register: booster_bitswap_peer_id_output
+  become_user: "{{ boost_user }}"
+  become: true
+  changed_when: false
+  ignore_errors: true
+
+- name: Set Booster Bitswap Peer ID
+  set_fact:
+    booster_bitswap_peer_id: "{{ booster_bitswap_peer_id_output.stdout | regex_replace('.*peer ID ([\\w]+)\\n?.*', '\\1') }}"
+  when: booster_bitswap_peer_id_output.rc == 0

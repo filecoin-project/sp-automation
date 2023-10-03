@@ -1,0 +1,48 @@
+---
+- name: Get public IPv4 address using ifconfig.me
+  ansible.builtin.command:
+    cmd: "curl -4 https://ifconfig.me"
+  register: booster_bitswap_get_public_ip
+  until: booster_bitswap_get_public_ip.rc == 0
+  retries: 3
+  delay: 3
+  when: booster_bitswap_public_ip is not defined
+  changed_when: false
+  check_mode: false
+
+- name: If we now have a public IPv4 address, use it
+  ansible.builtin.set_fact:
+    booster_bitswap_public_ip: "{{ booster_bitswap_get_public_ip.stdout }}"
+  when: booster_bitswap_public_ip is not defined and booster_bitswap_get_public_ip.rc == 0
+
+- name: Update Boost Bitswap Peer ID
+  ansible.builtin.replace:
+    path: "{{ boost_path }}/config.toml"
+    regexp: '\s\sBitswapPeerID\s=\s(.*)$'
+    replace: '  BitswapPeerID = "{{ booster_bitswap_peer_id }}"'
+    after: '\[Dealmaking\]'
+    before: '\[Wallets\]'
+
+- name: Update Boost Bitswap Public Addresses if it already exists
+  ansible.builtin.replace:
+    path: "{{ boost_path }}/config.toml"
+    regexp: '\s\sBitswapPublicAddresses\s=\s(.*)$'
+    replace: '  BitswapPublicAddresses = ["/ip4/{{ booster_bitswap_public_ip }}/tcp/{{ booster_bitswap_port }}"]'
+    after: '\[Dealmaking\]'
+    before: '\[Wallets\]'
+
+- name: Insert Boost Bitswap Public Addresses if it doesn't exist yet
+  ansible.builtin.lineinfile:
+    path: "{{ boost_path }}/config.toml"
+    line: '  BitswapPublicAddresses = ["/ip4/{{ booster_bitswap_public_ip }}/tcp/{{ booster_bitswap_port }}"]'
+    insertafter: '\[Dealmaking\]'
+    regexp: '^\s*BitswapPublicAddresses\s*='
+    state: present
+
+- name: Update Boost Bitswap Private Key file
+  ansible.builtin.replace:
+    path: "{{ boost_path }}/config.toml"
+    regexp: '\s\sBitswapPrivKeyFile\s=\s(.*)$'
+    replace: '  BitswapPrivKeyFile = "{{ booster_bitswap_repo }}/libp2p.key"'
+    after: '\[Dealmaking\]'
+    before: '\[Wallets\]'

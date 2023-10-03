@@ -1,0 +1,10 @@
+---
+# handlers file for fil_booster_bitswap
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Restart booster-bitswap
+  ansible.builtin.service:
+    name: booster-bitswap
+    state: restarted

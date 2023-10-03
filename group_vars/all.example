@@ -91,6 +91,7 @@ lotus_miner_port: 2345
 
 # Ports for Boost to run on
 boost_libp2p_port: 24001
+booster_bitswap_port: 8888
 
 # Set a custom IPFS gateway to use for miner parameter download.
 # Must be the protocol and domain of the IPFS gateway, without anything after it. For example: "http://ipfs.io"

@@ -1,0 +1,34 @@
+---
+- name: Install environment file for Boost
+  ansible.builtin.template:
+    src: booster-bitswap.env.j2
+    dest: "{{ boost_config_path }}/booster-bitswap.env"
+    owner: "{{ boost_user }}"
+    group: "{{ boost_user }}"
+
+- name: Install systemd unit file for Boost
+  ansible.builtin.template:
+    src: booster-bitswap.service.j2
+    dest: "/etc/systemd/system/booster-bitswap.service"
+    owner: "root"
+    group: "root"
+    mode: '0640'
+  notify: Reload systemd
+
+- name: If we installed a new version of Boost, use a handler to restart booster-bitswap
+  ansible.builtin.command:
+    cmd: /bin/true
+  changed_when: true
+  notify: Restart booster-bitswap
+  when: install_boost is defined and install_boost.changed
+
+# Flush handlers
+- name: Flush handlers to reload systemd if necessary
+  meta: flush_handlers
+
+- name: Ensure the booster-bitswap service is started
+  ansible.builtin.service:
+    name: booster-bitswap
+    state: started
+    enabled: true
+  notify: Restart booster-bitswap

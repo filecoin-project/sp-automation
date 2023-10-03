@@ -18,4 +18,5 @@ ln -sf "$(pwd)/roles/lotus_boost_actors" "$HOME/.ansible/roles/zorlin.lotus_boos
 ln -sf "$(pwd)/roles/fil_boost" "$HOME/.ansible/roles/zorlin.fil_boost"
 ln -sf "$(pwd)/roles/fil_boostd" "$HOME/.ansible/roles/zorlin.fil_boostd"
 ln -sf "$(pwd)/roles/fil_booster_http" "$HOME/.ansible/roles/zorlin.fil_booster_http"
+ln -sf "$(pwd)/roles/fil_booster_bitswap" "$HOME/.ansible/roles/zorlin.fil_booster_bitswap"
 ln -sf "$(pwd)/roles/yugabytedb" "$HOME/.ansible/roles/zorlin.yugabytedb"

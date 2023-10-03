@@ -76,6 +76,13 @@
     - name: Get lotus miner info
       ansible.builtin.include_tasks: tasks/get_lotus_miner_info.yml
 
+- name: Deploy Booster Bitswap
+  hosts: booster_bitswap
+  become: true
+
+  roles:
+    - zorlin.fil_booster_bitswap
+
 - name: Deploy Booster HTTP and Nginx
   hosts: booster_http
   become: true

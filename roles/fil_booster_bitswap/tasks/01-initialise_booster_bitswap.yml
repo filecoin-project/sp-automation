@@ -1,0 +1,11 @@
+---
+- name: Initialise Booster Bitswap
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/booster-bitswap init"
+    creates: "{{ booster_bitswap_repo }}/libp2p.key"
+    chdir: "{{ booster_bitswap_repo }}"
+  register: boost_init
+  become_user: "{{ boost_user }}"
+  become: true
+  changed_when: false
+  ignore_errors: true

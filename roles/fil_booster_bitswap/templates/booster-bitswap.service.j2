@@ -1,0 +1,17 @@
+[Unit]
+Description=Booster Bitswap service
+After=network-online.target
+Wants=network-online.target systemd-networkd-wait-online.service
+
+[Service]
+User={{ boost_user }}
+Group={{ boost_group }}
+EnvironmentFile={{ boost_config_path }}/booster-bitswap.env
+Restart=on-failure
+RestartSec=3s
+ExecStart=/usr/local/bin/booster-bitswap run --api-lid=ws://{{ hostvars[groups['boost_data'][0]]['ansible_' + boost_bind_interface]['ipv4']['address'] }}:8044 --api-fullnode=${FULLNODE_API_INFO} --api-storage=${MINER_API_INFO}
+
+SyslogIdentifier={{ boost_user }}
+
+[Install]
+WantedBy=multi-user.target
