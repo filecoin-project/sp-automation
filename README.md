@@ -67,10 +67,12 @@ If you run into this, please run `sudo dpkg-reconfigure nvidia-dkms-525-server` 
 This Ansible playbook will perform basic wallet management for you. This utilises Ansible facts (via `facts.d` in `/etc/ansible/facts.d`) and is still undergoing improvements.
 
 # Credits
-The SP Automation Stack was originally written by contributors to Protocol Labs & Filecoin Foundation.
+The SP Automation Stack was originally written by contributors to Protocol Labs & Filecoin Foundation. It is made available under the Dual Stack Permissive Licence.
 
-Bob Dubois: @bobdubois
-Anjor Kanekar: @anjor
-Angelo Schalley: @Angelo-gh3990
-Orjan Roren: @rjan90
-Benjamin Arntzen: @zorlin
+We are:
+
+* Bob Dubois: @bobdubois
+* Anjor Kanekar: @anjor
+* Angelo Schalley: @Angelo-gh3990
+* Orjan Roren: @rjan90
+* Benjamin Arntzen: @zorlin
