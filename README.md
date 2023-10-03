@@ -8,7 +8,6 @@ At the moment the SP Automation Stack is targeting new and small-sized SPs, as w
 ## Requirements
 - Ansible (2.12 or newer)
 - Python3 (3.9 or newer)
-- All requirements specified in the [SP-automation README](../README.md#requirements).
 - Passwordless sudo enabled on your Lotus node (alternatively, add the flags --become and --ask-become-pass when running ansible-playbook)
 - If you are using Secure Boot on your Lotus node, please read [the note on Secure Boot](#note-on-secure-boot).
 
