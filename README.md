@@ -1,5 +1,9 @@
 # SP Automation Stack for Ansible
-This is an experimental port of lotus-automation to Ansible.
+The SP Automation Stack, based on earlier work on a set of Bash scripts called `lotus-automation`, is a set of Ansible playbooks and tools that deploys and manages a complete Filecoin Storage Provider installation, including wallet management and bootstrapping.
+
+It is intended to be able to be run against the same SP over and over again, bringing the SP into alignment with where it should be.
+
+At the moment the SP Automation Stack is targeting new and small-sized SPs, as well as larger SPs who wish to experiment - over time, a Porting Guide will be published and improved which allows existing SPs to begin using the Stack and manage their existing deployments.
 
 ## Requirements
 - Ansible (2.12 or newer)
